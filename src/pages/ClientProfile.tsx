@@ -31,7 +31,7 @@ const mockParticipant = {
   email: "emma@example.com",
   firstName: "Emma",
   lastName: "Wilson",
-  role: "participant" as const,
+  role: "client" as const,
   status: "active" as const,
   phone: "555-123-4567",
   gender: "female" as const,
@@ -98,9 +98,9 @@ const recentUpdates = [
 
 export default function ParticipantProfile() {
   const { user } = useAuth();
-  // In a real application, we would use the authenticated user's ID to fetch the participant profile
+  // In a real application, we would use the authenticated user's ID to fetch the client profile
   // For now, we'll use our mock data
-  const participant = mockParticipant;
+  const client = mockParticipant;
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -136,24 +136,23 @@ export default function ParticipantProfile() {
               <div className="relative">
                 <Avatar className="h-24 w-24 border-4 border-[#1e3b93]/10 shadow-lg">
                   <AvatarImage
-                    src={participant.profileImage}
-                    alt={participant.fullName}
+                    src={client.profileImage}
+                    alt={client.fullName}
                   />
                   <AvatarFallback className="text-2xl bg-[#1e3b93] text-white font-semibold">
-                    {participant.firstName.charAt(0)}
-                    {participant.lastName.charAt(0)}
+                    {client.firstName.charAt(0)}
+                    {client.lastName.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full"></div>
               </div>
             </div>
             <CardTitle className="text-2xl text-gray-900">
-              {participant.fullName}
+              {client.fullName}
             </CardTitle>
             <CardDescription className="mt-2">
               <Badge className="bg-[#1e3b93] text-white hover:bg-[#1e3b93]/90 shadow-sm">
-                {participant.role.charAt(0).toUpperCase() +
-                  participant.role.slice(1)}
+                {client.role.charAt(0).toUpperCase() + client.role.slice(1)}
               </Badge>
             </CardDescription>
           </CardHeader>
@@ -163,27 +162,23 @@ export default function ParticipantProfile() {
                 <div className="w-8 h-8 rounded-lg bg-[#1e3b93]/10 flex items-center justify-center">
                   <Mail className="h-4 w-4 text-[#1e3b93]" />
                 </div>
-                <span className="text-sm text-gray-700">
-                  {participant.email}
-                </span>
+                <span className="text-sm text-gray-700">{client.email}</span>
               </div>
               <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1e3b93]/5 transition-colors">
                 <div className="w-8 h-8 rounded-lg bg-[#1e3b93]/10 flex items-center justify-center">
                   <Phone className="h-4 w-4 text-[#1e3b93]" />
                 </div>
-                <span className="text-sm text-gray-700">
-                  {participant.phone}
-                </span>
+                <span className="text-sm text-gray-700">{client.phone}</span>
               </div>
-              {participant.address && (
+              {client.address && (
                 <div className="flex items-start gap-3 p-2 rounded-lg hover:bg-[#1e3b93]/5 transition-colors">
                   <div className="w-8 h-8 rounded-lg bg-[#1e3b93]/10 flex items-center justify-center mt-0.5">
                     <MapPin className="h-4 w-4 text-[#1e3b93]" />
                   </div>
                   <div className="text-sm text-gray-700">
-                    <div>{participant.address.street}</div>
-                    <div>{`${participant.address.city}, ${participant.address.state} ${participant.address.postalCode}`}</div>
-                    <div>{participant.address.country}</div>
+                    <div>{client.address.street}</div>
+                    <div>{`${client.address.city}, ${client.address.state} ${client.address.postalCode}`}</div>
+                    <div>{client.address.country}</div>
                   </div>
                 </div>
               )}
@@ -192,7 +187,7 @@ export default function ParticipantProfile() {
             <Separator className="bg-[#1e3b93]/10" />
 
             {/* Emergency Contact */}
-            {participant.emergencyContact && (
+            {client.emergencyContact && (
               <div className="pt-2">
                 <h3 className="text-sm font-semibold flex items-center gap-2 mb-3 text-[#1e3b93]">
                   <AlertCircle className="h-4 w-4" />
@@ -202,7 +197,7 @@ export default function ParticipantProfile() {
                   <div className="flex justify-between">
                     <span className="font-medium text-gray-600">Name:</span>
                     <span className="text-gray-900">
-                      {participant.emergencyContact.name}
+                      {client.emergencyContact.name}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -210,13 +205,13 @@ export default function ParticipantProfile() {
                       Relationship:
                     </span>
                     <span className="text-gray-900">
-                      {participant.emergencyContact.relationship}
+                      {client.emergencyContact.relationship}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium text-gray-600">Phone:</span>
                     <span className="text-gray-900">
-                      {participant.emergencyContact.phone}
+                      {client.emergencyContact.phone}
                     </span>
                   </div>
                 </div>
@@ -234,7 +229,7 @@ export default function ParticipantProfile() {
                 value="bio"
                 className="data-[state=active]:bg-[#1e3b93] data-[state=active]:text-white"
               >
-                Bio & Support Needs
+                Bio & Service Needs
               </TabsTrigger>
               <TabsTrigger
                 value="appointments"
@@ -250,7 +245,7 @@ export default function ParticipantProfile() {
               </TabsTrigger>
             </TabsList>
 
-            {/* Bio and Support Needs */}
+            {/* Bio and Service Needs */}
             <TabsContent value="bio">
               <Card className="border-[#1e3b93]/10 transition-all duration-200 hover:shadow-lg">
                 <CardHeader className="border-b border-[#1e3b93]/10">
@@ -262,16 +257,16 @@ export default function ParticipantProfile() {
                       Bio
                     </h3>
                     <p className="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg">
-                      {participant.bio}
+                      {client.bio}
                     </p>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-medium mb-3 text-gray-900">
-                      Support Needs
+                      Service Needs
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {participant.supportNeeds.map((need, index) => (
+                      {client.supportNeeds.map((need, index) => (
                         <Badge
                           key={index}
                           variant="outline"
@@ -295,8 +290,8 @@ export default function ParticipantProfile() {
                             Date of Birth:
                           </span>
                           <span className="text-gray-900">
-                            {participant.dateOfBirth
-                              ? formatDate(participant.dateOfBirth)
+                            {client.dateOfBirth
+                              ? formatDate(client.dateOfBirth)
                               : "Not provided"}
                           </span>
                         </div>
@@ -305,9 +300,9 @@ export default function ParticipantProfile() {
                             Gender:
                           </span>
                           <span className="text-gray-900">
-                            {participant.gender
-                              ? participant.gender.charAt(0).toUpperCase() +
-                                participant.gender.slice(1)
+                            {client.gender
+                              ? client.gender.charAt(0).toUpperCase() +
+                                client.gender.slice(1)
                               : "Not provided"}
                           </span>
                         </div>
@@ -437,8 +432,7 @@ export default function ParticipantProfile() {
                         No progress notes available
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Progress notes from your support workers will appear
-                        here
+                        Progress notes from your workers will appear here
                       </p>
                     </div>
                   )}

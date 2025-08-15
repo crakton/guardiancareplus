@@ -121,7 +121,7 @@ const ParticipantShiftDetails = () => {
           <p className="text-gray-600 mb-4">
             There was an error loading the shift details. Please try again.
           </p>
-          <Button onClick={() => navigate("/participant/shifts")}>
+          <Button onClick={() => navigate("/client/shifts")}>
             Back to Shifts
           </Button>
         </div>
@@ -163,7 +163,7 @@ const ParticipantShiftDetails = () => {
           <p className="text-gray-600 mb-4">
             The shift you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => navigate("/participant/shifts")}>
+          <Button onClick={() => navigate("/client/shifts")}>
             Back to Shifts
           </Button>
         </div>
@@ -180,7 +180,7 @@ const ParticipantShiftDetails = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate("/participant/shifts")}
+          onClick={() => navigate("/client/shifts")}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -344,9 +344,7 @@ const ParticipantShiftDetails = () => {
                 ) : (
                   <User className="w-5 h-5 text-purple-600" />
                 )}
-                {shift.isMultiWorkerShift
-                  ? "Support Workers"
-                  : "Support Worker"}
+                {shift.isMultiWorkerShift ? "Workers" : "Support Worker"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

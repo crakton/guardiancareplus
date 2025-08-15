@@ -1,12 +1,11 @@
-// src/api/services/analyticsService.ts
-import { get, post } from '../apiClient';
-import { 
-  DateRange, 
-  DateRangeType, 
-  TrendDataPoint, 
-  ComparisonData, 
-  AnalyticsResponse
-} from '../../entities/Analytics';
+import { get, post } from "../apiClient";
+import {
+  DateRange,
+  DateRangeType,
+  TrendDataPoint,
+  ComparisonData,
+  AnalyticsResponse,
+} from "../../entities/Analytics";
 
 // Analytics overview interfaces
 export interface AdminOverviewAnalytics {
@@ -19,7 +18,7 @@ export interface AdminOverviewAnalytics {
     growthRate: ComparisonData;
   };
   platformActivity: {
-    activeOrganizations: number;
+    activeHouseholds: number;
     activeShifts: number;
     pendingTimesheets: number;
     completedShiftsToday: number;
@@ -64,7 +63,7 @@ export interface AdminFinancialAnalytics {
   revenue: {
     total: number;
     trend: TrendDataPoint[];
-    byOrganization: Array<{
+    byHousehold: Array<{
       organizationId: string;
       name: string;
       revenue: number;
@@ -133,7 +132,7 @@ export interface AnalyticsFilters {
   serviceType?: string;
   status?: string;
   comparison?: boolean;
-  groupBy?: 'day' | 'week' | 'month' | 'worker' | 'service' | 'status';
+  groupBy?: "day" | "week" | "month" | "worker" | "service" | "status";
 }
 
 // Export options
@@ -141,20 +140,20 @@ export interface ExportOptions {
   dateRange: DateRangeType | string;
   startDate?: string;
   endDate?: string;
-  format: 'pdf' | 'csv' | 'excel' | 'json';
+  format: "pdf" | "csv" | "excel" | "json";
 }
 
-// Participant analytics interfaces
-export interface ParticipantOverviewAnalytics {
+// Client analytics interfaces
+export interface ClientOverviewAnalytics {
   careOverview: {
     activeWorkers: number;
-    upcomingShifts: any[];
+    upcomingShifts: [];
     completedShiftsThisMonth: number;
     totalCareHours: {
       current: number;
       previous: number;
       percentageChange: number;
-      trend: 'up' | 'down' | 'stable';
+      trend: "up" | "down" | "stable";
     };
     pendingTimesheets: number;
   };
@@ -180,7 +179,7 @@ export interface ParticipantOverviewAnalytics {
   };
 }
 
-export interface ParticipantServiceAnalytics {
+export interface ClientServiceAnalytics {
   serviceDistribution: Array<{
     serviceType: string;
     hours: number;
@@ -199,23 +198,23 @@ export interface ParticipantServiceAnalytics {
   }>;
 }
 
-// Support Worker analytics interfaces
-export interface SupportWorkerOverviewAnalytics {
+//  Worker analytics interfaces
+export interface WorkerOverviewAnalytics {
   workSummary: {
     activeClients: number;
-    upcomingShifts: any[];
+    upcomingShifts: [];
     completedThisPeriod: number;
     hoursWorked: {
       current: number;
       previous: number;
       percentageChange: number;
-      trend: 'up' | 'down' | 'stable';
+      trend: "up" | "down" | "stable";
     };
     earnings: {
       current: number;
       previous: number;
       percentageChange: number;
-      trend: 'up' | 'down' | 'stable';
+      trend: "up" | "down" | "stable";
     };
   };
   performanceMetrics: {
@@ -232,13 +231,13 @@ export interface SupportWorkerOverviewAnalytics {
   };
 }
 
-export interface SupportWorkerFinancialAnalytics {
+export interface WorkerFinancialAnalytics {
   earnings: {
     currentPeriod: number;
     pending: number;
     paid: number;
     trend: TrendDataPoint[];
-    byOrganization: Array<{
+    byHousehold: Array<{
       organizationId: string;
       name: string;
       amount: number;
@@ -256,7 +255,7 @@ export interface SupportWorkerFinancialAnalytics {
   };
 }
 
-export interface SupportWorkerScheduleAnalytics {
+export interface WorkerScheduleAnalytics {
   weeklyHours: TrendDataPoint[];
   shiftDistribution: {
     byServiceType: Record<string, number>;
@@ -276,15 +275,15 @@ export interface SupportWorkerScheduleAnalytics {
   };
 }
 
-export interface SupportWorkerPerformanceAnalytics {
-  skillUtilization: any[];
+export interface WorkerPerformanceAnalytics {
+  skillUtilization: [];
   availabilityComparison: {
     availableHours: number;
     bookedHours: number;
     utilizationPercentage: number;
     unutilizedHours: number;
   };
-  documentAlerts: any[];
+  documentAlerts: [];
 }
 
 // Helper function to create date range
@@ -318,7 +317,7 @@ export const createDateRange = (
       break;
     case DateRangeType.CUSTOM:
       if (!startDate || !endDate) {
-        throw new Error('Custom date range requires start and end dates');
+        throw new Error("Custom date range requires start and end dates");
       }
       start = startDate;
       end = endDate;
@@ -339,163 +338,191 @@ const analyticsService = {
   ): Promise<AdminOverviewAnalytics> => {
     const params = new URLSearchParams({
       dateRange: dateRange.type,
-      comparison: comparison.toString()
+      comparison: comparison.toString(),
     });
-    
+
     if (dateRange.type === DateRangeType.CUSTOM) {
-      params.append('startDate', dateRange.startDate.toISOString());
-      params.append('endDate', dateRange.endDate.toISOString());
+      params.append("startDate", dateRange.startDate.toISOString());
+      params.append("endDate", dateRange.endDate.toISOString());
     }
-    
+
     // return await get<AdminOverviewAnalytics>(`/analytics/overview?${params}`);
-    const response = await get<AnalyticsResponse<AdminOverviewAnalytics>>(`/analytics/overview?${params}`)
+    const response = await get<AnalyticsResponse<AdminOverviewAnalytics>>(
+      `/analytics/overview?${params}`
+    );
     return response.analytics;
   },
-  
+
   // Get user analytics
-  getUserAnalytics: async (dateRange: DateRange): Promise<AdminUserAnalytics> => {
+  getUserAnalytics: async (
+    dateRange: DateRange
+  ): Promise<AdminUserAnalytics> => {
     const params = new URLSearchParams({
-      dateRange: dateRange.type
+      dateRange: dateRange.type,
     });
-    
+
     if (dateRange.type === DateRangeType.CUSTOM) {
-      params.append('startDate', dateRange.startDate.toISOString());
-      params.append('endDate', dateRange.endDate.toISOString());
+      params.append("startDate", dateRange.startDate.toISOString());
+      params.append("endDate", dateRange.endDate.toISOString());
     }
-    
+
     // return await get<AdminUserAnalytics>(`/analytics/admin/users?${params}`);
-    const response = await get<AnalyticsResponse<AdminUserAnalytics>>(`/analytics/admin/users?${params}`);
+    const response = await get<AnalyticsResponse<AdminUserAnalytics>>(
+      `/analytics/admin/users?${params}`
+    );
     return response.analytics;
   },
-  
+
   // Get financial analytics
-  getFinancialAnalytics: async (dateRange: DateRange): Promise<AdminFinancialAnalytics> => {
+  getFinancialAnalytics: async (
+    dateRange: DateRange
+  ): Promise<AdminFinancialAnalytics> => {
     const params = new URLSearchParams({
-      dateRange: dateRange.type
+      dateRange: dateRange.type,
     });
-    
+
     if (dateRange.type === DateRangeType.CUSTOM) {
-      params.append('startDate', dateRange.startDate.toISOString());
-      params.append('endDate', dateRange.endDate.toISOString());
+      params.append("startDate", dateRange.startDate.toISOString());
+      params.append("endDate", dateRange.endDate.toISOString());
     }
-    
+
     // return await get<AdminFinancialAnalytics>(`/analytics/admin/financial?${params}`);
-    const response = await get<AnalyticsResponse<AdminFinancialAnalytics>>(`/analytics/admin/financial?${params}`);
-    return response.analytics
-  },
-  
-  // Get filtered analytics
-  getFilteredAnalytics: async (filters: AnalyticsFilters): Promise<any> => {
-    return await post<any>('/analytics/filtered', filters);
-  },
-  
-  // Get platform summary
-  getPlatformSummary: async (dateRange: DateRange): Promise<PlatformSummary> => {
-    const params = new URLSearchParams({
-      dateRange: dateRange.type
-    });
-    
-    if (dateRange.type === DateRangeType.CUSTOM) {
-      params.append('startDate', dateRange.startDate.toISOString());
-      params.append('endDate', dateRange.endDate.toISOString());
-    }
-    
-    // return await get<PlatformSummary>(`/analytics/platform/summary?${params}`);
-    const response = await get<AnalyticsResponse<PlatformSummary>>(`/analytics/platform/summary?${params}`);
+    const response = await get<AnalyticsResponse<AdminFinancialAnalytics>>(
+      `/analytics/admin/financial?${params}`
+    );
     return response.analytics;
   },
-  
+
+  // Get filtered analytics
+  getFilteredAnalytics: async (filters: AnalyticsFilters): Promise<unknown> => {
+    return await post<unknown>("/analytics/filtered", filters);
+  },
+
+  // Get platform summary
+  getPlatformSummary: async (
+    dateRange: DateRange
+  ): Promise<PlatformSummary> => {
+    const params = new URLSearchParams({
+      dateRange: dateRange.type,
+    });
+
+    if (dateRange.type === DateRangeType.CUSTOM) {
+      params.append("startDate", dateRange.startDate.toISOString());
+      params.append("endDate", dateRange.endDate.toISOString());
+    }
+
+    // return await get<PlatformSummary>(`/analytics/platform/summary?${params}`);
+    const response = await get<AnalyticsResponse<PlatformSummary>>(
+      `/analytics/platform/summary?${params}`
+    );
+    return response.analytics;
+  },
+
   // Get real-time metrics
   getRealTimeMetrics: async (): Promise<RealTimeMetrics> => {
     // return await get<RealTimeMetrics>('/analytics/realtime');
-    const response = await get<AnalyticsResponse<RealTimeMetrics>>('/analytics/realtime');
-    return response.analytics
+    const response = await get<AnalyticsResponse<RealTimeMetrics>>(
+      "/analytics/realtime"
+    );
+    return response.analytics;
   },
-  
+
   // Export analytics data
   exportAnalyticsData: async (options: ExportOptions): Promise<Blob> => {
-    const response = await post<Blob>('/analytics/export', options, {
-      responseType: 'blob'
+    const response = await post<Blob>("/analytics/export", options, {
+      responseType: "blob",
     });
-    
+
     return response;
   },
 
-  // Get participant overview analytics
-  getParticipantOverview: async (
-    dateRange: string = 'month',
+  // Get client overview analytics
+  getClientOverview: async (
+    dateRange: string = "month",
     comparison: boolean = true
-  ): Promise<ParticipantOverviewAnalytics> => {
+  ): Promise<ClientOverviewAnalytics> => {
     const params = new URLSearchParams({
       dateRange,
-      comparison: comparison.toString()
+      comparison: comparison.toString(),
     });
 
-    const response = await get<AnalyticsResponse<ParticipantOverviewAnalytics>>(`/analytics/overview?${params}`);
+    const response = await get<AnalyticsResponse<ClientOverviewAnalytics>>(
+      `/analytics/overview?${params}`
+    );
     return response.analytics;
   },
 
-  // Get participant service analytics
-  getParticipantServices: async (
-    dateRange: string = 'month'
-  ): Promise<ParticipantServiceAnalytics> => {
-    const params = new URLSearchParams({
-      dateRange
-    });
-
-    const response = await get<AnalyticsResponse<ParticipantServiceAnalytics>>(`/analytics/participant/services?${params}`);
-    return response.analytics;
-  },
-
-  // Get support worker overview analytics
-  getSupportWorkerOverview: async (
-    dateRange: string = 'month',
-    comparison: boolean = true
-  ): Promise<SupportWorkerOverviewAnalytics> => {
+  // Get client service analytics
+  getClientServices: async (
+    dateRange: string = "month"
+  ): Promise<ClientServiceAnalytics> => {
     const params = new URLSearchParams({
       dateRange,
-      comparison: comparison.toString()
     });
 
-    const response = await get<AnalyticsResponse<SupportWorkerOverviewAnalytics>>(`/analytics/overview?${params}`);
+    const response = await get<AnalyticsResponse<ClientServiceAnalytics>>(
+      `/analytics/client/services?${params}`
+    );
     return response.analytics;
   },
 
-  // Get support worker financial analytics
-  getSupportWorkerFinancial: async (
-    dateRange: string = 'month'
-  ): Promise<SupportWorkerFinancialAnalytics> => {
+  // Get  worker overview analytics
+  getWorkerOverview: async (
+    dateRange: string = "month",
+    comparison: boolean = true
+  ): Promise<WorkerOverviewAnalytics> => {
     const params = new URLSearchParams({
-      dateRange
+      dateRange,
+      comparison: comparison.toString(),
     });
 
-    const response = await get<AnalyticsResponse<SupportWorkerFinancialAnalytics>>(`/analytics/worker/financial?${params}`);
+    const response = await get<AnalyticsResponse<WorkerOverviewAnalytics>>(
+      `/analytics/overview?${params}`
+    );
     return response.analytics;
   },
 
-  // Get support worker schedule analytics
-  getSupportWorkerSchedule: async (
-    dateRange: string = 'month'
-  ): Promise<SupportWorkerScheduleAnalytics> => {
+  // Get  worker financial analytics
+  getWorkerFinancial: async (
+    dateRange: string = "month"
+  ): Promise<WorkerFinancialAnalytics> => {
     const params = new URLSearchParams({
-      dateRange
+      dateRange,
     });
 
-    const response = await get<AnalyticsResponse<SupportWorkerScheduleAnalytics>>(`/analytics/worker/schedule?${params}`);
+    const response = await get<AnalyticsResponse<WorkerFinancialAnalytics>>(
+      `/analytics/worker/financial?${params}`
+    );
     return response.analytics;
   },
 
-  // Get support worker performance analytics
-  getSupportWorkerPerformance: async (
-    dateRange: string = 'month'
-  ): Promise<SupportWorkerPerformanceAnalytics> => {
+  // Get  worker schedule analytics
+  getWorkerSchedule: async (
+    dateRange: string = "month"
+  ): Promise<WorkerScheduleAnalytics> => {
     const params = new URLSearchParams({
-      dateRange
+      dateRange,
     });
 
-    const response = await get<{ skillUtilization: any[]; availabilityComparison: any; documentAlerts: any[] }>(`/analytics/worker/performance?${params}`);
+    const response = await get<AnalyticsResponse<WorkerScheduleAnalytics>>(
+      `/analytics/worker/schedule?${params}`
+    );
+    return response.analytics;
+  },
+
+  // Get  worker performance analytics
+  getWorkerPerformance: async (
+    dateRange: string = "month"
+  ): Promise<WorkerPerformanceAnalytics> => {
+    const params = new URLSearchParams({
+      dateRange,
+    });
+
+    const response = await get<WorkerPerformanceAnalytics>(
+      `/analytics/worker/performance?${params}`
+    );
     return response;
-  }
+  },
 };
 
 export default analyticsService;

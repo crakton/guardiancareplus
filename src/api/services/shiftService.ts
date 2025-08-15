@@ -1,5 +1,5 @@
-import { get } from '../apiClient';
-import { Shift, ShiftStatus } from '../../entities/Shift';
+import { get } from "../apiClient";
+import { Shift, ShiftStatus } from "../../entities/Shift";
 
 // Interface for shift filters
 export interface ShiftFilters {
@@ -7,7 +7,7 @@ export interface ShiftFilters {
   startDate?: string;
   endDate?: string;
   isMultiWorkerShift?: boolean;
-  participantId?: string;
+  clientId?: string;
   workerId?: string;
 }
 
@@ -17,7 +17,7 @@ interface ShiftsResponse {
 }
 
 interface ShiftResponse {
-    shift: Shift;
+  shift: Shift;
 }
 
 // Service for shift GET operations only
@@ -33,33 +33,33 @@ const shiftService = {
         }
       });
     }
-    
+
     const queryString = queryParams.toString();
-    const url = queryString ? `/shifts?${queryString}` : '/shifts';
-    
+    const url = queryString ? `/shifts?${queryString}` : "/shifts";
+
     // return await get<Shift[]>(url);
 
     // Get the response which contains { shifts: [...] }
     const response = await get<ShiftsResponse>(url);
-    
+
     // Return just the shifts array
     return response.shifts;
   },
-  
+
   // Get a specific shift by MongoDB ID
   getShiftById: async (id: string): Promise<Shift> => {
     // return await get<Shift>(`/shifts/${id}`);
 
-    const response =  await get<ShiftResponse>(`/shifts/${id}`);
-    return response.shift
+    const response = await get<ShiftResponse>(`/shifts/${id}`);
+    return response.shift;
   },
-  
+
   // Get shift by shiftId reference
   getShiftByShiftId: async (shiftIdRef: string): Promise<Shift> => {
     // Use the correct API endpoint /shifts/:shiftId
     const response = await get<ShiftResponse>(`/shifts/${shiftIdRef}`);
     return response.shift;
-  }
+  },
 };
 
 export default shiftService;

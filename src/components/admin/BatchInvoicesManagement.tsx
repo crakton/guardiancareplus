@@ -1,20 +1,20 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { 
+import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle 
+  CardTitle,
 } from "@/components/ui/card";
 import {
   Popover,
@@ -33,14 +33,14 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Search, 
-  Filter, 
-  Calendar as CalendarIcon, 
-  Eye, 
-  Clock, 
-  DollarSign, 
-  Receipt, 
+import {
+  Search,
+  Filter,
+  Calendar as CalendarIcon,
+  Eye,
+  Clock,
+  DollarSign,
+  Receipt,
   RefreshCw,
   Building,
   ChevronDown,
@@ -50,22 +50,25 @@ import {
   ChevronRight,
   Mail,
   Download,
-  Plus
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Import our types and hooks
-import { useGetBatchInvoices, useGetBatchInvoiceStats } from "@/hooks/useBatchInvoiceHooks";
-import { 
-  BatchInvoiceFilters, 
+import {
+  useGetBatchInvoices,
+  useGetBatchInvoiceStats,
+} from "@/hooks/useBatchInvoiceHooks";
+import {
+  BatchInvoiceFilters,
   BatchInvoice,
   BATCH_INVOICE_STATUS_CONFIG,
-  BatchInvoiceStatus
+  BatchInvoiceStatus,
 } from "@/entities/BatchInvoice";
 
 const BatchInvoicesManagement: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // Filter states
   const [filters, setFilters] = useState<BatchInvoiceFilters>({
     page: 1,
@@ -74,32 +77,41 @@ const BatchInvoicesManagement: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   // API calls
-  const { data: batchInvoicesData, isLoading, error } = useGetBatchInvoices(filters);
-  const { data: stats, isLoading: statsLoading } = useGetBatchInvoiceStats(filters);
+  const {
+    data: batchInvoicesData,
+    isLoading,
+    error,
+  } = useGetBatchInvoices(filters);
+  const { data: stats, isLoading: statsLoading } =
+    useGetBatchInvoiceStats(filters);
 
   // Helper functions
-  const formatDate = (dateString: string) => format(new Date(dateString), "MMM d, yyyy");
-  const formatDateShort = (dateString: string) => format(new Date(dateString), "d MMM yyyy");
-  const formatDateTime = (dateString: string) => format(new Date(dateString), "PPp");
-  const getFullName = (user: { firstName: string; lastName: string }) => `${user.firstName} ${user.lastName}`;
+  const formatDate = (dateString: string) =>
+    format(new Date(dateString), "MMM d, yyyy");
+  const formatDateShort = (dateString: string) =>
+    format(new Date(dateString), "d MMM yyyy");
+  const formatDateTime = (dateString: string) =>
+    format(new Date(dateString), "PPp");
+  const getFullName = (user: { firstName: string; lastName: string }) =>
+    `${user.firstName} ${user.lastName}`;
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
   // Filter change handlers
   const handleFilterChange = (key: keyof BatchInvoiceFilters, value: any) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [key]: value === 'all' || value === '' ? undefined : value,
-      page: 1 // Reset to first page when filters change
+      [key]: value === "all" || value === "" ? undefined : value,
+      page: 1, // Reset to first page when filters change
     }));
   };
 
@@ -109,16 +121,16 @@ const BatchInvoicesManagement: React.FC = () => {
   };
 
   const handleDateFilterChange = () => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       startDate: startDate?.toISOString(),
       endDate: endDate?.toISOString(),
-      page: 1
+      page: 1,
     }));
   };
 
   const handlePageChange = (page: number) => {
-    setFilters(prev => ({ ...prev, page }));
+    setFilters((prev) => ({ ...prev, page }));
   };
 
   const handleViewBatchInvoice = (id: string) => {
@@ -132,11 +144,12 @@ const BatchInvoicesManagement: React.FC = () => {
     });
     setStartDate(null);
     setEndDate(null);
-    setSearchTerm('');
+    setSearchTerm("");
   };
 
   // Check if any filters are active
-  const hasActiveFilters = filters.status || filters.startDate || filters.endDate || searchTerm;
+  const hasActiveFilters =
+    filters.status || filters.startDate || filters.endDate || searchTerm;
 
   // Client-side search filtering
   const filteredBatchInvoices = useMemo(() => {
@@ -145,16 +158,18 @@ const BatchInvoicesManagement: React.FC = () => {
     }
 
     const searchTermLower = searchTerm.toLowerCase();
-    return batchInvoicesData.batchInvoices.filter(invoice => {
-      const participantName = getFullName(invoice.participantId).toLowerCase();
+    return batchInvoicesData.batchInvoices.filter((invoice) => {
+      const clientName = getFullName(invoice.clientId).toLowerCase();
       const workerName = getFullName(invoice.workerId).toLowerCase();
       const batchNumber = invoice.batchNumber.toLowerCase();
       const invoiceNumber = invoice.invoiceNumber.toLowerCase();
-      
-      return participantName.includes(searchTermLower) || 
-             workerName.includes(searchTermLower) || 
-             batchNumber.includes(searchTermLower) ||
-             invoiceNumber.includes(searchTermLower);
+
+      return (
+        clientName.includes(searchTermLower) ||
+        workerName.includes(searchTermLower) ||
+        batchNumber.includes(searchTermLower) ||
+        invoiceNumber.includes(searchTermLower)
+      );
     });
   }, [batchInvoicesData?.batchInvoices, searchTerm]);
 
@@ -169,17 +184,23 @@ const BatchInvoicesManagement: React.FC = () => {
   };
 
   // Email status badges
-  const getEmailStatusBadge = (sent: boolean, type: 'participant' | 'worker') => {
+  const getEmailStatusBadge = (sent: boolean, type: "client" | "worker") => {
     if (sent) {
       return (
-        <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200 text-xs">
+        <Badge
+          variant="outline"
+          className="bg-green-100 text-green-800 border-green-200 text-xs"
+        >
           <Mail className="h-3 w-3 mr-1" />
           Sent
         </Badge>
       );
     }
     return (
-      <Badge variant="outline" className="bg-gray-100 text-gray-600 border-gray-200 text-xs">
+      <Badge
+        variant="outline"
+        className="bg-gray-100 text-gray-600 border-gray-200 text-xs"
+      >
         <Mail className="h-3 w-3 mr-1" />
         Not Sent
       </Badge>
@@ -187,10 +208,15 @@ const BatchInvoicesManagement: React.FC = () => {
   };
 
   // Statistics cards
-  const StatCard = ({ title, value, icon: Icon, color }: { 
-    title: string; 
-    value: number | string; 
-    icon: React.ElementType; 
+  const StatCard = ({
+    title,
+    value,
+    icon: Icon,
+    color,
+  }: {
+    title: string;
+    value: number | string;
+    icon: React.ElementType;
     color: string;
   }) => (
     <Card>
@@ -208,10 +234,11 @@ const BatchInvoicesManagement: React.FC = () => {
 
   // Pagination Controls
   const PaginationControls = () => {
-    if (!batchInvoicesData?.totalPages || batchInvoicesData.totalPages <= 1) return null;
+    if (!batchInvoicesData?.totalPages || batchInvoicesData.totalPages <= 1)
+      return null;
 
     const { page, totalPages, totalResults } = batchInvoicesData;
-    const startItem = ((page - 1) * (filters.limit || 20)) + 1;
+    const startItem = (page - 1) * (filters.limit || 20) + 1;
     const endItem = Math.min(page * (filters.limit || 20), totalResults);
 
     return (
@@ -229,12 +256,12 @@ const BatchInvoicesManagement: React.FC = () => {
             <ChevronLeft className="h-4 w-4" />
             Previous
           </Button>
-          
+
           <div className="flex items-center space-x-1">
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               const pageNum = i + 1;
               const isActive = pageNum === page;
-              
+
               return (
                 <Button
                   key={pageNum}
@@ -248,7 +275,7 @@ const BatchInvoicesManagement: React.FC = () => {
               );
             })}
           </div>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -274,7 +301,7 @@ const BatchInvoicesManagement: React.FC = () => {
           </div>
           <Skeleton className="h-10 w-32" />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
@@ -284,7 +311,7 @@ const BatchInvoicesManagement: React.FC = () => {
             </Card>
           ))}
         </div>
-        
+
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-32" />
@@ -305,14 +332,18 @@ const BatchInvoicesManagement: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Batch Invoices</h1>
-            <p className="text-gray-600 mt-1">Manage and monitor batch invoice generation</p>
+            <p className="text-gray-600 mt-1">
+              Manage and monitor batch invoice generation
+            </p>
           </div>
         </div>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-red-600 mb-2">Error Loading Batch Invoices</h3>
+              <h3 className="text-lg font-semibold text-red-600 mb-2">
+                Error Loading Batch Invoices
+              </h3>
               <p className="text-gray-600 mb-4">
                 There was an error loading the batch invoices. Please try again.
               </p>
@@ -333,7 +364,9 @@ const BatchInvoicesManagement: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Batch Invoices</h1>
-          <p className="text-sm text-gray-600 mt-1">Manage and monitor batch invoice generation</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Manage and monitor batch invoice generation
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -342,9 +375,9 @@ const BatchInvoicesManagement: React.FC = () => {
             onClick={() => setShowFilters(!showFilters)}
           >
             <Filter className="h-4 w-4 mr-2" />
-            {showFilters ? 'Hide' : 'Show'} Filters
+            {showFilters ? "Hide" : "Show"} Filters
           </Button>
-          <Button onClick={() => navigate('/admin/batch-invoices/generate')}>
+          <Button onClick={() => navigate("/admin/batch-invoices/generate")}>
             <Plus className="h-4 w-4 mr-2" />
             Generate Batch
           </Button>
@@ -407,8 +440,8 @@ const BatchInvoicesManagement: React.FC = () => {
               <div className="space-y-2">
                 <label className="text-xs font-medium">Status</label>
                 <Select
-                  value={filters.status || 'all'}
-                  onValueChange={(value) => handleFilterChange('status', value)}
+                  value={filters.status || "all"}
+                  onValueChange={(value) => handleFilterChange("status", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All statuses" />
@@ -433,7 +466,9 @@ const BatchInvoicesManagement: React.FC = () => {
                       className="w-full justify-start text-left font-normal"
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? formatDateShort(startDate.toISOString()) : "Pick a date"}
+                      {startDate
+                        ? formatDateShort(startDate.toISOString())
+                        : "Pick a date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -457,7 +492,9 @@ const BatchInvoicesManagement: React.FC = () => {
                       className="w-full justify-start text-left font-normal"
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? formatDateShort(endDate.toISOString()) : "Pick a date"}
+                      {endDate
+                        ? formatDateShort(endDate.toISOString())
+                        : "Pick a date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -497,22 +534,24 @@ const BatchInvoicesManagement: React.FC = () => {
             Batch Invoices ({batchInvoicesData?.totalResults || 0})
           </CardTitle>
           <CardDescription>
-            {hasActiveFilters 
-              ? `Showing filtered results from ${batchInvoicesData?.totalResults || 0} batch invoices`
-              : 'All batch invoices in the system'
-            }
+            {hasActiveFilters
+              ? `Showing filtered results from ${
+                  batchInvoicesData?.totalResults || 0
+                } batch invoices`
+              : "All batch invoices in the system"}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {filteredBatchInvoices.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-base font-semibold mb-2">No batch invoices found</h3>
+              <h3 className="text-base font-semibold mb-2">
+                No batch invoices found
+              </h3>
               <p className="text-sm text-gray-600">
-                {hasActiveFilters 
-                  ? "No batch invoices match your current filters." 
-                  : "No batch invoices have been generated yet."
-                }
+                {hasActiveFilters
+                  ? "No batch invoices match your current filters."
+                  : "No batch invoices have been generated yet."}
               </p>
             </div>
           ) : (
@@ -544,32 +583,45 @@ const BatchInvoicesManagement: React.FC = () => {
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="flex-1">
-                            <p className="font-medium text-sm">{getFullName(invoice.workerId)}</p>
-                            <p className="text-xs text-gray-600">{invoice.workerId.email}</p>
+                            <p className="font-medium text-sm">
+                              {getFullName(invoice.workerId)}
+                            </p>
+                            <p className="text-xs text-gray-600">
+                              {invoice.workerId.email}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="flex-1">
-                            <p className="font-medium text-sm">{getFullName(invoice.participantId)}</p>
-                            <p className="text-xs text-gray-600">{invoice.participantId.email}</p>
+                            <p className="font-medium text-sm">
+                              {getFullName(invoice.clientId)}
+                            </p>
+                            <p className="text-xs text-gray-600">
+                              {invoice.clientId.email}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <p className="text-sm">{formatDate(invoice.startDate)}</p>
-                          <p className="text-xs text-gray-600">to {formatDate(invoice.endDate)}</p>
+                          <p className="text-sm">
+                            {formatDate(invoice.startDate)}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            to {formatDate(invoice.endDate)}
+                          </p>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        {getStatusBadge(invoice.status)}
-                      </TableCell>
+                      <TableCell>{getStatusBadge(invoice.status)}</TableCell>
                       <TableCell>
                         <div className="flex flex-col space-y-1">
-                          {getEmailStatusBadge(invoice.sentToParticipant, 'participant')}
-                          {getEmailStatusBadge(invoice.sentToWorker, 'worker')}
+                          {getEmailStatusBadge(
+                            invoice.sentToParticipant,
+                            "client"
+                          )}
+                          {getEmailStatusBadge(invoice.sentToWorker, "worker")}
                         </div>
                       </TableCell>
                       <TableCell className="font-medium text-sm">
@@ -607,4 +659,4 @@ const BatchInvoicesManagement: React.FC = () => {
   );
 };
 
-export default BatchInvoicesManagement; 
+export default BatchInvoicesManagement;

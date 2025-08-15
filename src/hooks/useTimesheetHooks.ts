@@ -1,23 +1,26 @@
 // api/hooks/useTimesheetHooks.ts
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { timesheetService } from '../api/services/timesheetService';
-import { 
-  ProcessedTimesheetData, 
-  Timesheet, 
-  TimesheetClientFilters, 
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { timesheetService } from "../api/services/timesheetService";
+import {
+  ProcessedTimesheetData,
+  Timesheet,
+  TimesheetClientFilters,
   TimesheetFilters,
-  TimesheetSummary 
-} from '../entities/Timesheet';
+  TimesheetSummary,
+} from "../entities/Timesheet";
 
 // Query keys for cache management
 export const timesheetKeys = {
-  all: ['timesheets'] as const,
-  lists: () => [...timesheetKeys.all, 'list'] as const,
-  list: (filters?: TimesheetClientFilters) => [...timesheetKeys.lists(), filters] as const,
-  details: () => [...timesheetKeys.all, 'detail'] as const,
+  all: ["timesheets"] as const,
+  lists: () => [...timesheetKeys.all, "list"] as const,
+  list: (filters?: TimesheetClientFilters) =>
+    [...timesheetKeys.lists(), filters] as const,
+  details: () => [...timesheetKeys.all, "detail"] as const,
   detail: (id: string) => [...timesheetKeys.details(), id] as const,
-  summary: (filters?: TimesheetFilters) => [...timesheetKeys.all, 'summary', filters] as const,
-  raw: (filters?: TimesheetFilters) => [...timesheetKeys.all, 'raw', filters] as const,
+  summary: (filters?: TimesheetFilters) =>
+    [...timesheetKeys.all, "summary", filters] as const,
+  raw: (filters?: TimesheetFilters) =>
+    [...timesheetKeys.all, "raw", filters] as const,
 };
 
 // Hook to get processed timesheets with client-side filtering, sorting, and pagination
@@ -77,7 +80,7 @@ export const useProcessTimesheets = (
   filters: TimesheetClientFilters
 ): ProcessedTimesheetData | undefined => {
   if (!timesheets) return undefined;
-  
+
   return timesheetService.processTimesheets(timesheets, filters);
 };
 
@@ -86,7 +89,7 @@ export const useTimesheetStatusCounts = (
   filters?: TimesheetFilters
 ): UseQueryResult<Record<string, number>> => {
   return useQuery({
-    queryKey: [...timesheetKeys.summary(filters), 'status-counts'],
+    queryKey: [...timesheetKeys.summary(filters), "status-counts"],
     queryFn: async () => {
       const summary = await timesheetService.getTimesheetSummary(filters);
       return {
@@ -94,28 +97,32 @@ export const useTimesheetStatusCounts = (
         pending: summary.pendingCount,
         approved: summary.approvedCount,
         rejected: summary.rejectedCount,
-        revised: summary.totalTimesheets - summary.pendingCount - summary.approvedCount - summary.rejectedCount,
+        revised:
+          summary.totalTimesheets -
+          summary.pendingCount -
+          summary.approvedCount -
+          summary.rejectedCount,
       };
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 };
 
-// Hook for participant-specific timesheets
+// Hook for client-specific timesheets
 export const useGetParticipantTimesheets = (
-  participantId: string,
-  additionalFilters?: Omit<TimesheetClientFilters, 'participantId'>,
+  clientId: string,
+  additionalFilters?: Omit<TimesheetClientFilters, "clientId">,
   enabled: boolean = true
 ): UseQueryResult<ProcessedTimesheetData> => {
   const filters: TimesheetClientFilters = {
     ...additionalFilters,
-    participantId,
+    clientId,
   };
 
   return useQuery({
-    queryKey: [...timesheetKeys.all, 'participant', participantId, additionalFilters],
+    queryKey: [...timesheetKeys.all, "client", clientId, additionalFilters],
     queryFn: () => timesheetService.getTimesheets(filters),
-    enabled: enabled && !!participantId,
+    enabled: enabled && !!clientId,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 };
@@ -126,54 +133,70 @@ export const useGetWorkerTimesheets = (
   additionalFilters?: TimesheetClientFilters,
   enabled: boolean = true
 ): UseQueryResult<ProcessedTimesheetData> => {
-  const allTimesheetsQuery = useGetAllTimesheets(additionalFilters, enabled && !!workerId);
+  const allTimesheetsQuery = useGetAllTimesheets(
+    additionalFilters,
+    enabled && !!workerId
+  );
 
   return useQuery({
-    queryKey: [...timesheetKeys.all, 'worker', workerId, additionalFilters],
+    queryKey: [...timesheetKeys.all, "worker", workerId, additionalFilters],
     queryFn: async () => {
       if (!allTimesheetsQuery.data) {
-        throw new Error('All timesheets data not available');
+        throw new Error("All timesheets data not available");
       }
 
       // Filter by worker ID on the client side
       // Handle both string workerId and object workerId cases
-      const workerTimesheets = allTimesheetsQuery.data.filter(
-        timesheet => {
-          const timesheetWorkerId = typeof timesheet.workerId === 'string' 
-            ? timesheet.workerId 
+      const workerTimesheets = allTimesheetsQuery.data.filter((timesheet) => {
+        const timesheetWorkerId =
+          typeof timesheet.workerId === "string"
+            ? timesheet.workerId
             : timesheet.workerId._id;
-          return timesheetWorkerId === workerId;
-        }
-      );
+        return timesheetWorkerId === workerId;
+      });
 
-      return timesheetService.processTimesheets(workerTimesheets, additionalFilters || {});
+      return timesheetService.processTimesheets(
+        workerTimesheets,
+        additionalFilters || {}
+      );
     },
     enabled: enabled && !!workerId && !!allTimesheetsQuery.data,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 };
 
-// Hook for organization-specific timesheets (client-side filtering)
-export const useGetOrganizationTimesheets = (
+// Hook for household-specific timesheets (client-side filtering)
+export const useGetHouseholdTimesheets = (
   organizationId: string,
   additionalFilters?: TimesheetClientFilters,
   enabled: boolean = true
 ): UseQueryResult<ProcessedTimesheetData> => {
-  const allTimesheetsQuery = useGetAllTimesheets(additionalFilters, enabled && !!organizationId);
+  const allTimesheetsQuery = useGetAllTimesheets(
+    additionalFilters,
+    enabled && !!organizationId
+  );
 
   return useQuery({
-    queryKey: [...timesheetKeys.all, 'organization', organizationId, additionalFilters],
+    queryKey: [
+      ...timesheetKeys.all,
+      "household",
+      organizationId,
+      additionalFilters,
+    ],
     queryFn: async () => {
       if (!allTimesheetsQuery.data) {
-        throw new Error('All timesheets data not available');
+        throw new Error("All timesheets data not available");
       }
 
-      // Filter by organization ID on the client side
+      // Filter by household ID on the client side
       const orgTimesheets = allTimesheetsQuery.data.filter(
-        timesheet => timesheet.organizationId._id === organizationId
+        (timesheet) => timesheet.organizationId._id === organizationId
       );
 
-      return timesheetService.processTimesheets(orgTimesheets, additionalFilters || {});
+      return timesheetService.processTimesheets(
+        orgTimesheets,
+        additionalFilters || {}
+      );
     },
     enabled: enabled && !!organizationId && !!allTimesheetsQuery.data,
     staleTime: 2 * 60 * 1000, // 2 minutes

@@ -1,5 +1,10 @@
 // src/hooks/useAnalyticsHooks.ts
-import { useQuery, useMutation, UseMutationResult, UseQueryResult } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  UseMutationResult,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import analyticsService, {
   AdminOverviewAnalytics,
   AdminUserAnalytics,
@@ -8,43 +13,42 @@ import analyticsService, {
   RealTimeMetrics,
   AnalyticsFilters,
   ExportOptions,
-  ParticipantOverviewAnalytics,
-  ParticipantServiceAnalytics,
-  SupportWorkerOverviewAnalytics,
-  SupportWorkerFinancialAnalytics,
-  SupportWorkerScheduleAnalytics,
-  SupportWorkerPerformanceAnalytics
-} from '../api/services/analyticsService';
-import { DateRange } from '../entities/Analytics';
-import { toast } from 'sonner';
+  ClientOverviewAnalytics,
+  ClientServiceAnalytics,
+  WorkerOverviewAnalytics,
+  WorkerFinancialAnalytics,
+  WorkerScheduleAnalytics,
+  WorkerPerformanceAnalytics,
+} from "../api/services/analyticsService";
+import { DateRange } from "../entities/Analytics";
+import { toast } from "sonner";
 
 // Query keys
 export const analyticsKeys = {
-  all: ['analytics'] as const,
-  overview: (dateRange?: DateRange, comparison?: boolean) => 
-    [...analyticsKeys.all, 'overview', dateRange, comparison] as const,
-  userAnalytics: (dateRange?: DateRange) => 
-    [...analyticsKeys.all, 'user-analytics', dateRange] as const,
-  financialAnalytics: (dateRange?: DateRange) => 
-    [...analyticsKeys.all, 'financial-analytics', dateRange] as const,
-  filteredAnalytics: (filters?: AnalyticsFilters) => 
-    [...analyticsKeys.all, 'filtered', filters] as const,
-  platformSummary: (dateRange?: DateRange) => 
-    [...analyticsKeys.all, 'platform-summary', dateRange] as const,
-  realTimeMetrics: () => 
-    [...analyticsKeys.all, 'real-time'] as const,
-  participantOverview: (dateRange?: string, comparison?: boolean) => 
-    [...analyticsKeys.all, 'participant-overview', dateRange, comparison] as const,
-  participantServices: (dateRange?: string) => 
-    [...analyticsKeys.all, 'participant-services', dateRange] as const,
-  supportWorkerOverview: (dateRange?: string, comparison?: boolean) => 
-    [...analyticsKeys.all, 'support-worker-overview', dateRange, comparison] as const,
-  supportWorkerFinancial: (dateRange?: string) => 
-    [...analyticsKeys.all, 'support-worker-financial', dateRange] as const,
-  supportWorkerSchedule: (dateRange?: string) => 
-    [...analyticsKeys.all, 'support-worker-schedule', dateRange] as const,
-  supportWorkerPerformance: (dateRange?: string) => 
-    [...analyticsKeys.all, 'support-worker-performance', dateRange] as const,
+  all: ["analytics"] as const,
+  overview: (dateRange?: DateRange, comparison?: boolean) =>
+    [...analyticsKeys.all, "overview", dateRange, comparison] as const,
+  userAnalytics: (dateRange?: DateRange) =>
+    [...analyticsKeys.all, "user-analytics", dateRange] as const,
+  financialAnalytics: (dateRange?: DateRange) =>
+    [...analyticsKeys.all, "financial-analytics", dateRange] as const,
+  filteredAnalytics: (filters?: AnalyticsFilters) =>
+    [...analyticsKeys.all, "filtered", filters] as const,
+  platformSummary: (dateRange?: DateRange) =>
+    [...analyticsKeys.all, "platform-summary", dateRange] as const,
+  realTimeMetrics: () => [...analyticsKeys.all, "real-time"] as const,
+  clientOverview: (dateRange?: string, comparison?: boolean) =>
+    [...analyticsKeys.all, "client-overview", dateRange, comparison] as const,
+  clientServices: (dateRange?: string) =>
+    [...analyticsKeys.all, "client-services", dateRange] as const,
+  workerOverview: (dateRange?: string, comparison?: boolean) =>
+    [...analyticsKeys.all, "worker-overview", dateRange, comparison] as const,
+  workerFinancial: (dateRange?: string) =>
+    [...analyticsKeys.all, "worker-financial", dateRange] as const,
+  workerSchedule: (dateRange?: string) =>
+    [...analyticsKeys.all, "worker-schedule", dateRange] as const,
+  workerPerformance: (dateRange?: string) =>
+    [...analyticsKeys.all, "worker-performance", dateRange] as const,
 };
 
 // Hook to get dashboard overview analytics
@@ -57,7 +61,7 @@ export const useGetDashboardOverview = (
     queryKey: analyticsKeys.overview(dateRange, comparison),
     queryFn: () => analyticsService.getDashboardOverview(dateRange, comparison),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
@@ -70,7 +74,7 @@ export const useGetUserAnalytics = (
     queryKey: analyticsKeys.userAnalytics(dateRange),
     queryFn: () => analyticsService.getUserAnalytics(dateRange),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
@@ -83,7 +87,7 @@ export const useGetFinancialAnalytics = (
     queryKey: analyticsKeys.financialAnalytics(dateRange),
     queryFn: () => analyticsService.getFinancialAnalytics(dateRange),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
@@ -96,7 +100,7 @@ export const useGetFilteredAnalytics = (
     queryKey: analyticsKeys.filteredAnalytics(filters),
     queryFn: () => analyticsService.getFilteredAnalytics(filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
@@ -109,7 +113,7 @@ export const useGetPlatformSummary = (
     queryKey: analyticsKeys.platformSummary(dateRange),
     queryFn: () => analyticsService.getPlatformSummary(dateRange),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
@@ -123,7 +127,7 @@ export const useGetRealTimeMetrics = (
     queryFn: () => analyticsService.getRealTimeMetrics(),
     staleTime: 30 * 1000, // 30 seconds
     refetchInterval,
-    enabled
+    enabled,
   });
 };
 
@@ -134,110 +138,115 @@ export const useExportAnalyticsData = (): UseMutationResult<
   ExportOptions
 > => {
   return useMutation({
-    mutationFn: (options: ExportOptions) => analyticsService.exportAnalyticsData(options),
+    mutationFn: (options: ExportOptions) =>
+      analyticsService.exportAnalyticsData(options),
     onSuccess: (data, variables) => {
       // Create download link
       const url = window.URL.createObjectURL(data);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      
+
       // Set file name based on format
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      a.download = `analytics-export-${timestamp}.${variables.format === 'excel' ? 'xlsx' : variables.format}`;
-      
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      a.download = `analytics-export-${timestamp}.${
+        variables.format === "excel" ? "xlsx" : variables.format
+      }`;
+
       // Trigger download
       document.body.appendChild(a);
       a.click();
-      
+
       // Cleanup
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
-      toast.success(`Export completed successfully in ${variables.format.toUpperCase()} format`);
+
+      toast.success(
+        `Export completed successfully in ${variables.format.toUpperCase()} format`
+      );
     },
     onError: (error) => {
-      console.error('Export failed:', error);
-      toast.error('Failed to export analytics data. Please try again.');
-    }
+      console.error("Export failed:", error);
+      toast.error("Failed to export analytics data. Please try again.");
+    },
   });
 };
 
-// Hook to get participant overview analytics
-export const useGetParticipantOverview = (
-  dateRange: string = 'month',
+// Hook to get client overview analytics
+export const useGetClientOverview = (
+  dateRange: string = "month",
   comparison: boolean = true,
   enabled: boolean = true
-): UseQueryResult<ParticipantOverviewAnalytics> => {
+): UseQueryResult<ClientOverviewAnalytics> => {
   return useQuery({
-    queryKey: analyticsKeys.participantOverview(dateRange, comparison),
-    queryFn: () => analyticsService.getParticipantOverview(dateRange, comparison),
+    queryKey: analyticsKeys.clientOverview(dateRange, comparison),
+    queryFn: () => analyticsService.getClientOverview(dateRange, comparison),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
-// Hook to get participant service analytics
-export const useGetParticipantServices = (
-  dateRange: string = 'month',
+// Hook to get client service analytics
+export const useGetClientServices = (
+  dateRange: string = "month",
   enabled: boolean = true
-): UseQueryResult<ParticipantServiceAnalytics> => {
+): UseQueryResult<ClientServiceAnalytics> => {
   return useQuery({
-    queryKey: analyticsKeys.participantServices(dateRange),
-    queryFn: () => analyticsService.getParticipantServices(dateRange),
+    queryKey: analyticsKeys.clientServices(dateRange),
+    queryFn: () => analyticsService.getClientServices(dateRange),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
-// Hook to get support worker overview analytics
-export const useGetSupportWorkerOverview = (
-  dateRange: string = 'month',
+// Hook to get  worker overview analytics
+export const useGetWorkerOverview = (
+  dateRange: string = "month",
   comparison: boolean = true,
   enabled: boolean = true
-): UseQueryResult<SupportWorkerOverviewAnalytics> => {
+): UseQueryResult<WorkerOverviewAnalytics> => {
   return useQuery({
-    queryKey: analyticsKeys.supportWorkerOverview(dateRange, comparison),
-    queryFn: () => analyticsService.getSupportWorkerOverview(dateRange, comparison),
+    queryKey: analyticsKeys.workerOverview(dateRange, comparison),
+    queryFn: () => analyticsService.getWorkerOverview(dateRange, comparison),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
-// Hook to get support worker financial analytics
-export const useGetSupportWorkerFinancial = (
-  dateRange: string = 'month',
+// Hook to get  worker financial analytics
+export const useGetWorkerFinancial = (
+  dateRange: string = "month",
   enabled: boolean = true
-): UseQueryResult<SupportWorkerFinancialAnalytics> => {
+): UseQueryResult<WorkerFinancialAnalytics> => {
   return useQuery({
-    queryKey: analyticsKeys.supportWorkerFinancial(dateRange),
-    queryFn: () => analyticsService.getSupportWorkerFinancial(dateRange),
+    queryKey: analyticsKeys.workerFinancial(dateRange),
+    queryFn: () => analyticsService.getWorkerFinancial(dateRange),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
-// Hook to get support worker schedule analytics
-export const useGetSupportWorkerSchedule = (
-  dateRange: string = 'month',
+// Hook to get  worker schedule analytics
+export const useGetWorkerSchedule = (
+  dateRange: string = "month",
   enabled: boolean = true
-): UseQueryResult<SupportWorkerScheduleAnalytics> => {
+): UseQueryResult<WorkerScheduleAnalytics> => {
   return useQuery({
-    queryKey: analyticsKeys.supportWorkerSchedule(dateRange),
-    queryFn: () => analyticsService.getSupportWorkerSchedule(dateRange),
+    queryKey: analyticsKeys.workerSchedule(dateRange),
+    queryFn: () => analyticsService.getWorkerSchedule(dateRange),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };
 
-// Hook to get support worker performance analytics
-export const useGetSupportWorkerPerformance = (
-  dateRange: string = 'month',
+// Hook to get  worker performance analytics
+export const useGetWorkerPerformance = (
+  dateRange: string = "month",
   enabled: boolean = true
-): UseQueryResult<SupportWorkerPerformanceAnalytics> => {
+): UseQueryResult<WorkerPerformanceAnalytics> => {
   return useQuery({
-    queryKey: analyticsKeys.supportWorkerPerformance(dateRange),
-    queryFn: () => analyticsService.getSupportWorkerPerformance(dateRange),
+    queryKey: analyticsKeys.workerPerformance(dateRange),
+    queryFn: () => analyticsService.getWorkerPerformance(dateRange),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled
+    enabled,
   });
 };

@@ -31,7 +31,7 @@
 
 //   const handleSetupComplete = () => {
 //     if (!user) return;
-    
+
 //     completeOnboarding();
 //     toast.success('Profile setup completed successfully!');
 //     navigate('/support-worker');
@@ -45,8 +45,8 @@
 //       case 'guardian':
 //         navigate('/guardian');
 //         break;
-//       case 'participant':
-//         navigate('/participant');
+//       case 'client':
+//         navigate('/client');
 //         break;
 //       case 'support-worker':
 //         navigate('/support-worker');

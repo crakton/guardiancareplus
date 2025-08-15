@@ -46,7 +46,7 @@ import {
   TIMESHEET_STATUS_CONFIG,
 } from "@/entities/Timesheet";
 
-const ParticipantTimesheetDetails: React.FC = () => {
+const SupportWorkerTimesheetDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("details");
@@ -55,7 +55,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
   const { data: timesheet, isLoading, error } = useGetTimesheet(id || "", !!id);
 
   const handleGoBack = () => {
-    navigate("/participant/timesheets");
+    navigate("/support-worker/timesheets");
   };
 
   // Helper functions
@@ -161,7 +161,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
   if (error || !timesheet) {
     return (
       <div className="p-6">
-        <Card className="border-[#1e3b93]/10">
+        <Card>
           <CardContent className="pt-6">
             <div className="text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
@@ -171,11 +171,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
               <p className="text-muted-foreground mb-4">
                 We couldn't load the timesheet details. Please try again.
               </p>
-              <Button
-                onClick={handleGoBack}
-                variant="outline"
-                className="border-[#1e3b93]/20 hover:bg-[#1e3b93]/10 hover:border-[#1e3b93]/40 text-[#1e3b93]"
-              >
+              <Button onClick={handleGoBack} variant="outline">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Timesheets
               </Button>
@@ -191,16 +187,12 @@ const ParticipantTimesheetDetails: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            onClick={handleGoBack}
-            className="text-[#1e3b93] hover:bg-[#1e3b93]/10"
-          >
+          <Button variant="ghost" onClick={handleGoBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Timesheets
           </Button>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-[#1e3b93]">
+            <h1 className="text-3xl font-bold tracking-tight">
               Timesheet Details
             </h1>
             <p className="text-muted-foreground">
@@ -223,42 +215,29 @@ const ParticipantTimesheetDetails: React.FC = () => {
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="mb-6 bg-[#1e3b93]/5 border border-[#1e3b93]/10">
-              <TabsTrigger
-                value="details"
-                className="data-[state=active]:bg-[#1e3b93] data-[state=active]:text-white"
-              >
-                Shift Details
-              </TabsTrigger>
-              <TabsTrigger
-                value="expenses"
-                className="data-[state=active]:bg-[#1e3b93] data-[state=active]:text-white"
-              >
+            <TabsList className="mb-6">
+              <TabsTrigger value="details">Shift Details</TabsTrigger>
+              <TabsTrigger value="expenses">
                 Expenses ({timesheet.expenses.length})
               </TabsTrigger>
-              <TabsTrigger
-                value="payments"
-                className="data-[state=active]:bg-[#1e3b93] data-[state=active]:text-white"
-              >
-                Payment Breakdown
-              </TabsTrigger>
+              <TabsTrigger value="payments">Payment Breakdown</TabsTrigger>
             </TabsList>
 
             {/* Shift Details Tab */}
             <TabsContent value="details">
-              <Card className="border-[#1e3b93]/10">
-                <CardHeader className="border-b border-[#1e3b93]/10">
-                  <CardTitle className="text-[#1e3b93] flex items-center gap-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
                     <ClipboardCheck className="w-5 h-5" />
                     Shift Information
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-6">
+                <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Info */}
                     <div className="space-y-4">
-                      <div className="bg-[#1e3b93]/5 rounded-lg p-4">
-                        <h3 className="font-medium text-[#1e3b93] mb-3 flex items-center">
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <h3 className="font-medium text-blue-700 mb-3 flex items-center">
                           <FileText className="w-4 h-4 mr-2" />
                           Shift Details
                         </h3>
@@ -267,7 +246,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                             <span className="font-medium text-gray-600">
                               Shift ID:
                             </span>
-                            <span className="font-mono text-[#1e3b93]">
+                            <span className="font-mono">
                               {timesheet.shiftIdRef}
                             </span>
                           </div>
@@ -283,7 +262,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                           </div>
                           <div className="flex justify-between">
                             <span className="font-medium text-gray-600">
-                              Organization:
+                              Household:
                             </span>
                             <span>{timesheet.organizationId.name}</span>
                           </div>
@@ -345,7 +324,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                               <span className="font-medium text-gray-600">
                                 Extra Time:
                               </span>
-                              <span className="text-[#1e3b93] font-medium">
+                              <span className="text-blue-600 font-medium">
                                 +{timesheet.extraTime} minutes
                               </span>
                             </div>
@@ -408,9 +387,9 @@ const ParticipantTimesheetDetails: React.FC = () => {
 
             {/* Expenses Tab */}
             <TabsContent value="expenses">
-              <Card className="border-[#1e3b93]/10">
-                <CardHeader className="border-b border-[#1e3b93]/10">
-                  <CardTitle className="text-[#1e3b93] flex items-center gap-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
                     <Receipt className="w-5 h-5" />
                     Expenses
                   </CardTitle>
@@ -418,7 +397,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                     Detailed breakdown of all expenses for this shift
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-6">
+                <CardContent>
                   {timesheet.expenses.length === 0 ? (
                     <div className="text-center py-8">
                       <Receipt className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -451,12 +430,12 @@ const ParticipantTimesheetDetails: React.FC = () => {
                               <TableCell>
                                 <Badge
                                   variant={
-                                    expense.payer === "participant"
+                                    expense.payer === "client"
                                       ? "default"
                                       : "secondary"
                                   }
                                 >
-                                  {expense.payer === "participant"
+                                  {expense.payer === "client"
                                     ? "Participant"
                                     : "Worker"}
                                 </Badge>
@@ -466,12 +445,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                               </TableCell>
                               <TableCell className="text-right">
                                 {expense.receiptUrl ? (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    asChild
-                                    className="text-[#1e3b93] hover:bg-[#1e3b93]/10"
-                                  >
+                                  <Button variant="ghost" size="sm" asChild>
                                     <a
                                       href={expense.receiptUrl}
                                       target="_blank"
@@ -498,7 +472,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                                 <div>
                                   Participant Expenses:{" "}
                                   {formatCurrency(
-                                    timesheet.participantExpensesTotal
+                                    timesheet.clientExpensesTotal
                                   )}
                                 </div>
                                 <div>
@@ -524,9 +498,9 @@ const ParticipantTimesheetDetails: React.FC = () => {
 
             {/* Payment Breakdown Tab */}
             <TabsContent value="payments">
-              <Card className="border-[#1e3b93]/10">
-                <CardHeader className="border-b border-[#1e3b93]/10">
-                  <CardTitle className="text-[#1e3b93] flex items-center gap-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
                     <DollarSign className="w-5 h-5" />
                     Payment Breakdown
                   </CardTitle>
@@ -534,7 +508,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                     Detailed calculation of payment for this shift
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-6">
+                <CardContent>
                   <div className="space-y-6">
                     {/* Rate Calculations */}
                     <div>
@@ -558,7 +532,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                                 </p>
                               </div>
                               <div className="text-right">
-                                <div className="font-medium text-lg text-[#1e3b93]">
+                                <div className="font-medium text-lg">
                                   {formatCurrency(calc.amount)}
                                 </div>
                               </div>
@@ -591,7 +565,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                           <span>{formatCurrency(timesheet.totalExpenses)}</span>
                         </div>
                         <Separator />
-                        <div className="flex justify-between text-lg font-medium text-[#1e3b93]">
+                        <div className="flex justify-between text-lg font-medium">
                           <span>Total Amount:</span>
                           <span>{formatCurrency(timesheet.totalAmount)}</span>
                         </div>
@@ -608,69 +582,37 @@ const ParticipantTimesheetDetails: React.FC = () => {
           </Tabs>
         </div>
 
-        {/* Right Column - Support Worker Info & Status */}
+        {/* Right Column - Participant Info & Status */}
         <div className="space-y-6">
-          {/* Support Worker Card */}
-          <Card className="border-[#1e3b93]/10">
+          {/* Participant Card */}
+          <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base text-[#1e3b93]">
-                Support Worker
-              </CardTitle>
+              <CardTitle className="text-base">Participant</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4 mb-4">
-                <Avatar className="h-12 w-12 border-2 border-[#1e3b93]/10">
-                  <AvatarImage src={typeof timesheet.workerId === 'object' ? timesheet.workerId.profileImage : undefined} />
-                  <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
-                    {typeof timesheet.workerId === 'object' 
-                      ? timesheet.workerId.firstName.charAt(0) + timesheet.workerId.lastName.charAt(0)
-                      : 'W'
-                    }
+                <Avatar className="h-12 w-12">
+                  <AvatarFallback>
+                    {timesheet.clientId.firstName.charAt(0)}
+                    {timesheet.clientId.lastName.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <h3 className="font-medium">
-                    {typeof timesheet.workerId === 'object' 
-                      ? getFullName(timesheet.workerId)
-                      : timesheet.workerId
-                    }
+                    {getFullName(timesheet.clientId)}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Support Worker
+                    {timesheet.organizationId.name}
                   </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <UserCircle className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {typeof timesheet.workerId === 'object' 
-                      ? timesheet.workerId.email
-                      : 'Email not available'
-                    }
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {typeof timesheet.workerId === 'object' 
-                      ? timesheet.workerId.phone
-                      : 'Phone not available'
-                    }
-                  </span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Status Timeline */}
-          <Card className="border-[#1e3b93]/10">
+          <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base text-[#1e3b93]">
-                Status Timeline
-              </CardTitle>
+              <CardTitle className="text-base">Status Timeline</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -731,11 +673,9 @@ const ParticipantTimesheetDetails: React.FC = () => {
           </Card>
 
           {/* Quick Summary Card */}
-          <Card className="border-[#1e3b93]/10">
+          <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base text-[#1e3b93]">
-                Quick Summary
-              </CardTitle>
+              <CardTitle className="text-base">Quick Summary</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3 text-sm">
@@ -762,7 +702,7 @@ const ParticipantTimesheetDetails: React.FC = () => {
                   </span>
                 </div>
                 <Separator />
-                <div className="flex justify-between text-[#1e3b93] font-medium">
+                <div className="flex justify-between font-medium">
                   <span>Total Earned:</span>
                   <span>{formatCurrency(timesheet.grandTotal)}</span>
                 </div>
@@ -775,4 +715,4 @@ const ParticipantTimesheetDetails: React.FC = () => {
   );
 };
 
-export default ParticipantTimesheetDetails;
+export default SupportWorkerTimesheetDetails;

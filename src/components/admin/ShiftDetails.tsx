@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { 
+import {
   ArrowLeft,
   Calendar,
   Clock,
@@ -17,22 +17,17 @@ import {
   Briefcase,
   Info,
   Send,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
-import { 
+import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle 
+  CardTitle,
 } from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -74,58 +69,58 @@ const formatDuration = (startTime: string, endTime: string) => {
   const diffMs = end.getTime() - start.getTime();
   const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
   const diffMins = Math.round((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-  
+
   if (diffHrs === 0) {
     return `${diffMins} minutes`;
   } else if (diffMins === 0) {
     return diffHrs === 1 ? "1 hour" : `${diffHrs} hours`;
   } else {
-    return diffHrs === 1 
-      ? `1 hour ${diffMins} minutes` 
+    return diffHrs === 1
+      ? `1 hour ${diffMins} minutes`
       : `${diffHrs} hours ${diffMins} minutes`;
   }
 };
 
 // Get status badge component with appropriate styling
 const getStatusBadge = (status: string) => {
-  const statusMap: Record<string, { className: string, label: string }> = {
-    [ShiftStatus.OPEN]: { 
-      className: "bg-blue-100 text-blue-800 border-blue-200", 
-      label: "Open" 
+  const statusMap: Record<string, { className: string; label: string }> = {
+    [ShiftStatus.OPEN]: {
+      className: "bg-blue-100 text-blue-800 border-blue-200",
+      label: "Open",
     },
-    [ShiftStatus.PENDING]: { 
-      className: "bg-yellow-100 text-yellow-800 border-yellow-200", 
-      label: "Pending" 
+    [ShiftStatus.PENDING]: {
+      className: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      label: "Pending",
     },
-    [ShiftStatus.CONFIRMED]: { 
-      className: "bg-green-100 text-green-800 border-green-200", 
-      label: "Confirmed" 
+    [ShiftStatus.CONFIRMED]: {
+      className: "bg-green-100 text-green-800 border-green-200",
+      label: "Confirmed",
     },
-    [ShiftStatus.IN_PROGRESS]: { 
-      className: "bg-blue-100 text-blue-800 border-blue-200", 
-      label: "In Progress" 
+    [ShiftStatus.IN_PROGRESS]: {
+      className: "bg-blue-100 text-blue-800 border-blue-200",
+      label: "In Progress",
     },
-    [ShiftStatus.COMPLETED]: { 
-      className: "bg-purple-100 text-purple-800 border-purple-200", 
-      label: "Completed" 
+    [ShiftStatus.COMPLETED]: {
+      className: "bg-purple-100 text-purple-800 border-purple-200",
+      label: "Completed",
     },
-    [ShiftStatus.CANCELLED]: { 
-      className: "bg-gray-100 text-gray-800 border-gray-200", 
-      label: "Cancelled" 
+    [ShiftStatus.CANCELLED]: {
+      className: "bg-gray-100 text-gray-800 border-gray-200",
+      label: "Cancelled",
     },
-    [ShiftStatus.NO_SHOW]: { 
-      className: "bg-red-100 text-red-800 border-red-200", 
-      label: "No Show" 
+    [ShiftStatus.NO_SHOW]: {
+      className: "bg-red-100 text-red-800 border-red-200",
+      label: "No Show",
     },
-    [ShiftStatus.DECLINED]: { 
-      className: "bg-red-100 text-red-800 border-red-200", 
-      label: "Declined" 
-    }
+    [ShiftStatus.DECLINED]: {
+      className: "bg-red-100 text-red-800 border-red-200",
+      label: "Declined",
+    },
   };
 
-  const { className, label } = statusMap[status] || { 
-    className: "bg-gray-100 text-gray-800 border-gray-200", 
-    label: status 
+  const { className, label } = statusMap[status] || {
+    className: "bg-gray-100 text-gray-800 border-gray-200",
+    label: status,
   };
 
   return (
@@ -137,57 +132,63 @@ const getStatusBadge = (status: string) => {
 
 // Get large status badge
 const getLargeStatusBadge = (status: string) => {
-  const statusMap: Record<string, { className: string, label: string, icon: JSX.Element }> = {
-    [ShiftStatus.OPEN]: { 
-      className: "bg-blue-100 text-blue-800 border-blue-200", 
+  const statusMap: Record<
+    string,
+    { className: string; label: string; icon: JSX.Element }
+  > = {
+    [ShiftStatus.OPEN]: {
+      className: "bg-blue-100 text-blue-800 border-blue-200",
       label: "Open",
-      icon: <Calendar className="h-4 w-4 mr-2" />
+      icon: <Calendar className="h-4 w-4 mr-2" />,
     },
-    [ShiftStatus.PENDING]: { 
-      className: "bg-yellow-100 text-yellow-800 border-yellow-200", 
+    [ShiftStatus.PENDING]: {
+      className: "bg-yellow-100 text-yellow-800 border-yellow-200",
       label: "Pending",
-      icon: <Clock className="h-4 w-4 mr-2" />
+      icon: <Clock className="h-4 w-4 mr-2" />,
     },
-    [ShiftStatus.CONFIRMED]: { 
-      className: "bg-green-100 text-green-800 border-green-200", 
+    [ShiftStatus.CONFIRMED]: {
+      className: "bg-green-100 text-green-800 border-green-200",
       label: "Confirmed",
-      icon: <Calendar className="h-4 w-4 mr-2" />
+      icon: <Calendar className="h-4 w-4 mr-2" />,
     },
-    [ShiftStatus.IN_PROGRESS]: { 
-      className: "bg-blue-100 text-blue-800 border-blue-200", 
+    [ShiftStatus.IN_PROGRESS]: {
+      className: "bg-blue-100 text-blue-800 border-blue-200",
       label: "In Progress",
-      icon: <Clock className="h-4 w-4 mr-2" />
+      icon: <Clock className="h-4 w-4 mr-2" />,
     },
-    [ShiftStatus.COMPLETED]: { 
-      className: "bg-purple-100 text-purple-800 border-purple-200", 
+    [ShiftStatus.COMPLETED]: {
+      className: "bg-purple-100 text-purple-800 border-purple-200",
       label: "Completed",
-      icon: <Calendar className="h-4 w-4 mr-2" />
+      icon: <Calendar className="h-4 w-4 mr-2" />,
     },
-    [ShiftStatus.CANCELLED]: { 
-      className: "bg-gray-100 text-gray-800 border-gray-200", 
+    [ShiftStatus.CANCELLED]: {
+      className: "bg-gray-100 text-gray-800 border-gray-200",
       label: "Cancelled",
-      icon: <AlertCircle className="h-4 w-4 mr-2" />
+      icon: <AlertCircle className="h-4 w-4 mr-2" />,
     },
-    [ShiftStatus.NO_SHOW]: { 
-      className: "bg-red-100 text-red-800 border-red-200", 
+    [ShiftStatus.NO_SHOW]: {
+      className: "bg-red-100 text-red-800 border-red-200",
       label: "No Show",
-      icon: <AlertCircle className="h-4 w-4 mr-2" />
+      icon: <AlertCircle className="h-4 w-4 mr-2" />,
     },
-    [ShiftStatus.DECLINED]: { 
-      className: "bg-red-100 text-red-800 border-red-200", 
+    [ShiftStatus.DECLINED]: {
+      className: "bg-red-100 text-red-800 border-red-200",
       label: "Declined",
-      icon: <AlertCircle className="h-4 w-4 mr-2" />
-    }
+      icon: <AlertCircle className="h-4 w-4 mr-2" />,
+    },
   };
 
-  const { className, label, icon } = statusMap[status] || { 
-    className: "bg-gray-100 text-gray-800 border-gray-200", 
+  const { className, label, icon } = statusMap[status] || {
+    className: "bg-gray-100 text-gray-800 border-gray-200",
     label: status,
-    icon: <Calendar className="h-4 w-4 mr-2" />
+    icon: <Calendar className="h-4 w-4 mr-2" />,
   };
 
   return (
-    <Badge variant="outline" className={`${className} text-sm py-1 px-3 flex items-center`}>
+    <Badge
+      variant="outline"
+      className={`${className} text-sm py-1 px-3 flex items-center`}
+    >
       {icon}
       {label}
     </Badge>
@@ -198,39 +199,45 @@ const getLargeStatusBadge = (status: string) => {
 const getServiceTypeBadge = (serviceType: string) => {
   // Capitalize and format service type
   const formattedType = serviceType
-    .replace(/([A-Z])/g, ' $1') // Add space before capital letters
-    .replace(/^./, str => str.toUpperCase()); // Capitalize first letter
-  
-  const serviceTypeMap: Record<string, { icon: JSX.Element, className: string }> = {
-    "personalCare": { 
-      icon: <UserCircle className="h-4 w-4 mr-2" />, 
-      className: "bg-blue-50 text-blue-700 border-blue-200" 
+    .replace(/([A-Z])/g, " $1") // Add space before capital letters
+    .replace(/^./, (str) => str.toUpperCase()); // Capitalize first letter
+
+  const serviceTypeMap: Record<
+    string,
+    { icon: JSX.Element; className: string }
+  > = {
+    personalCare: {
+      icon: <UserCircle className="h-4 w-4 mr-2" />,
+      className: "bg-blue-50 text-blue-700 border-blue-200",
     },
-    "mealPreparation": { 
-      icon: <Briefcase className="h-4 w-4 mr-2" />, 
-      className: "bg-green-50 text-green-700 border-green-200" 
+    mealPreparation: {
+      icon: <Briefcase className="h-4 w-4 mr-2" />,
+      className: "bg-green-50 text-green-700 border-green-200",
     },
-    "socialSupport": { 
-      icon: <Users className="h-4 w-4 mr-2" />, 
-      className: "bg-purple-50 text-purple-700 border-purple-200" 
+    socialSupport: {
+      icon: <Users className="h-4 w-4 mr-2" />,
+      className: "bg-purple-50 text-purple-700 border-purple-200",
     },
-    "therapySupport": { 
-      icon: <UserCircle className="h-4 w-4 mr-2" />, 
-      className: "bg-indigo-50 text-indigo-700 border-indigo-200" 
+    therapySupport: {
+      icon: <UserCircle className="h-4 w-4 mr-2" />,
+      className: "bg-indigo-50 text-indigo-700 border-indigo-200",
     },
-    "mobilityAssistance": { 
-      icon: <Users className="h-4 w-4 mr-2" />, 
-      className: "bg-orange-50 text-orange-700 border-orange-200" 
-    }
+    mobilityAssistance: {
+      icon: <Users className="h-4 w-4 mr-2" />,
+      className: "bg-orange-50 text-orange-700 border-orange-200",
+    },
   };
 
-  const typeInfo = serviceTypeMap[serviceType] || { 
-    icon: <Briefcase className="h-4 w-4 mr-2" />, 
-    className: "bg-gray-50 text-gray-700 border-gray-200" 
+  const typeInfo = serviceTypeMap[serviceType] || {
+    icon: <Briefcase className="h-4 w-4 mr-2" />,
+    className: "bg-gray-50 text-gray-700 border-gray-200",
   };
 
   return (
-    <Badge variant="outline" className={`${typeInfo.className} text-sm py-1 px-3 flex items-center`}>
+    <Badge
+      variant="outline"
+      className={`${typeInfo.className} text-sm py-1 px-3 flex items-center`}
+    >
       {typeInfo.icon}
       {formattedType}
     </Badge>
@@ -240,9 +247,12 @@ const getServiceTypeBadge = (serviceType: string) => {
 // Get recurrence badge
 const getRecurrenceBadge = (recurrence?: Recurrence | null) => {
   if (!recurrence || recurrence.pattern === "none") return null;
-  
+
   return (
-    <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 flex items-center text-xs">
+    <Badge
+      variant="outline"
+      className="bg-indigo-50 text-indigo-700 border-indigo-200 flex items-center text-xs"
+    >
       <RepeatIcon className="h-4 w-4 mr-2" />
       {recurrence.pattern.charAt(0).toUpperCase() + recurrence.pattern.slice(1)}
       {recurrence.occurrences ? ` (${recurrence.occurrences}x)` : ""}
@@ -253,22 +263,31 @@ const getRecurrenceBadge = (recurrence?: Recurrence | null) => {
 // Get time status badge (upcoming, today, past)
 const getTimeStatusBadge = (dateTimeString: string) => {
   const dateTime = new Date(dateTimeString);
-  
+
   if (isToday(dateTime)) {
     return (
-      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+      <Badge
+        variant="outline"
+        className="bg-green-50 text-green-700 border-green-200"
+      >
         Today
       </Badge>
     );
   } else if (isPast(dateTime)) {
     return (
-      <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-200">
+      <Badge
+        variant="outline"
+        className="bg-gray-100 text-gray-700 border-gray-200"
+      >
         Past
       </Badge>
     );
   } else {
     return (
-      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+      <Badge
+        variant="outline"
+        className="bg-blue-50 text-blue-700 border-blue-200"
+      >
         Upcoming
       </Badge>
     );
@@ -282,10 +301,10 @@ export function ShiftDetailView() {
 
   const { data: shift, isLoading, error } = useGetShiftById(id);
 
-  console.log('shift: ', shift);
+  console.log("shift: ", shift);
 
   const handleGoBack = () => {
-    navigate('/admin/shifts');
+    navigate("/admin/shifts");
   };
 
   // Loading state
@@ -306,7 +325,12 @@ export function ShiftDetailView() {
       <Card className="max-w-4xl mx-auto mt-8">
         <CardHeader>
           <div className="flex items-center">
-            <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleGoBack}
+              className="mr-4"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
@@ -314,7 +338,9 @@ export function ShiftDetailView() {
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-red-600">There was an error loading the shift details. Please try again.</p>
+          <p className="text-red-600">
+            There was an error loading the shift details. Please try again.
+          </p>
         </CardContent>
         <CardFooter>
           <Button onClick={handleGoBack}>Return to Shifts</Button>
@@ -329,7 +355,12 @@ export function ShiftDetailView() {
       <Card className="max-w-4xl mx-auto mt-8">
         <CardHeader>
           <div className="flex items-center">
-            <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleGoBack}
+              className="mr-4"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
@@ -349,7 +380,12 @@ export function ShiftDetailView() {
   return (
     <div className="container mx-auto py-6 max-w-6xl">
       <div className="flex items-center mb-6">
-        <Button variant="ghost" size="sm" onClick={handleGoBack} className="mr-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleGoBack}
+          className="mr-4"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Shifts
         </Button>
@@ -359,7 +395,7 @@ export function ShiftDetailView() {
           {getLargeStatusBadge(shift.status)}
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Main content - 2/3 width on desktop */}
         <div className="md:col-span-2 space-y-6">
@@ -369,68 +405,94 @@ export function ShiftDetailView() {
                 <div className="flex items-center justify-between">
                   <CardTitle>Shift {shift.shiftId}</CardTitle>
                   {getRecurrenceBadge(shift.recurrence) && (
-                    <div>
-                      {getRecurrenceBadge(shift.recurrence)}
-                    </div>
+                    <div>{getRecurrenceBadge(shift.recurrence)}</div>
                   )}
                 </div>
                 <CardDescription className="flex items-center">
                   <Building className="h-4 w-4 mr-2" />
-                  {typeof shift.organizationId === 'object' ? shift.organizationId.name : shift.organizationId}
+                  {typeof shift.organizationId === "object"
+                    ? shift.organizationId.name
+                    : shift.organizationId}
                 </CardDescription>
               </div>
             </CardHeader>
             <CardContent>
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
                 <TabsList className="w-full grid grid-cols-3">
                   <TabsTrigger value="details">Details</TabsTrigger>
                   <TabsTrigger value="instructions">Instructions</TabsTrigger>
                   <TabsTrigger value="history">History</TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent value="details" className="pt-4">
                   <div className="space-y-6">
                     {/* Service and Location Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
-                        <h3 className="text-sm font-medium text-muted-foreground">Service Information</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">
+                          Service Information
+                        </h3>
                         <div className="bg-muted/30 p-4 rounded-lg space-y-4">
                           <div>
-                            <p className="text-sm font-medium mb-1">Service Type</p>
+                            <p className="text-sm font-medium mb-1">
+                              Service Type
+                            </p>
                             {getServiceTypeBadge(shift.serviceTypeId.name)}
                           </div>
-                          
+
                           <div>
-                            <p className="text-sm font-medium mb-1">Shift Type</p>
+                            <p className="text-sm font-medium mb-1">
+                              Shift Type
+                            </p>
                             <p className="text-sm">
-                              {shift.shiftType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                              {shift.shiftType
+                                .replace(/([A-Z])/g, " $1")
+                                .replace(/^./, (str) => str.toUpperCase())}
                             </p>
                           </div>
-                          
+
                           <div>
-                            <p className="text-sm font-medium mb-1">Worker Assignment</p>
+                            <p className="text-sm font-medium mb-1">
+                              Worker Assignment
+                            </p>
                             <p className="text-sm">
-                              {shift.isMultiWorkerShift ? "Multi-worker shift" : "Single worker shift"}
+                              {shift.isMultiWorkerShift
+                                ? "Multi-worker shift"
+                                : "Single worker shift"}
                             </p>
                           </div>
-                          
+
                           <div>
-                            <p className="text-sm font-medium mb-1">Requires Supervision</p>
-                            <p className="text-sm">{shift.requiresSupervision ? "Yes" : "No"}</p>
+                            <p className="text-sm font-medium mb-1">
+                              Requires Supervision
+                            </p>
+                            <p className="text-sm">
+                              {shift.requiresSupervision ? "Yes" : "No"}
+                            </p>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-4">
-                        <h3 className="text-sm font-medium text-muted-foreground">Location Information</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">
+                          Location Information
+                        </h3>
                         <div className="bg-muted/30 p-4 rounded-lg space-y-4">
                           <div>
-                            <p className="text-sm font-medium mb-1">Location Type</p>
+                            <p className="text-sm font-medium mb-1">
+                              Location Type
+                            </p>
                             <p className="text-sm">
-                              {shift.locationType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                              {shift.locationType
+                                .replace(/([A-Z])/g, " $1")
+                                .replace(/^./, (str) => str.toUpperCase())}
                             </p>
                           </div>
-                          
+
                           <div>
                             <p className="text-sm font-medium mb-1">Address</p>
                             <div className="flex items-start gap-2">
@@ -441,49 +503,66 @@ export function ShiftDetailView() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Multi-worker assignments */}
-                    {shift.isMultiWorkerShift && shift.workerAssignments && shift.workerAssignments.length > 0 && (
-                      <div className="space-y-4">
-                        <h3 className="text-sm font-medium text-muted-foreground">Worker Assignments</h3>
-                        <div className="bg-muted/30 p-4 rounded-lg space-y-4">
-                          {shift.workerAssignments.map((assignment, index) => (
-                            <div key={assignment._id} className="flex items-center justify-between p-3 bg-white rounded-md border">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-8 w-8">
-                                  {assignment.workerId.profileImage ? (
-                                    <AvatarImage 
-                                      src={assignment.workerId.profileImage}
-                                      alt={getFullName(assignment.workerId)}
-                                    />
-                                  ) : null}
-                                  <AvatarFallback>
-                                    {assignment.workerId.firstName.charAt(0)}
-                                    {assignment.workerId.lastName.charAt(0)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <p className="text-sm font-medium">{getFullName(assignment.workerId)}</p>
-                                  <p className="text-xs text-muted-foreground">{assignment.workerId.email}</p>
+                    {shift.isMultiWorkerShift &&
+                      shift.workerAssignments &&
+                      shift.workerAssignments.length > 0 && (
+                        <div className="space-y-4">
+                          <h3 className="text-sm font-medium text-muted-foreground">
+                            Worker Assignments
+                          </h3>
+                          <div className="bg-muted/30 p-4 rounded-lg space-y-4">
+                            {shift.workerAssignments.map(
+                              (assignment, index) => (
+                                <div
+                                  key={assignment._id}
+                                  className="flex items-center justify-between p-3 bg-white rounded-md border"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <Avatar className="h-8 w-8">
+                                      {assignment.workerId.profileImage ? (
+                                        <AvatarImage
+                                          src={assignment.workerId.profileImage}
+                                          alt={getFullName(assignment.workerId)}
+                                        />
+                                      ) : null}
+                                      <AvatarFallback>
+                                        {assignment.workerId.firstName.charAt(
+                                          0
+                                        )}
+                                        {assignment.workerId.lastName.charAt(0)}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                      <p className="text-sm font-medium">
+                                        {getFullName(assignment.workerId)}
+                                      </p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {assignment.workerId.email}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    {getStatusBadge(assignment.status)}
+                                    {assignment.declineReason && (
+                                      <p className="text-xs text-red-600 mt-1">
+                                        Declined: {assignment.declineReason}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="text-right">
-                                {getStatusBadge(assignment.status)}
-                                {assignment.declineReason && (
-                                  <p className="text-xs text-red-600 mt-1">
-                                    Declined: {assignment.declineReason}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          ))}
+                              )
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    
+                      )}
+
                     {/* Date and Time */}
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium text-muted-foreground">Date and Time</h3>
+                      <h3 className="text-sm font-medium text-muted-foreground">
+                        Date and Time
+                      </h3>
                       <div className="bg-muted/30 p-4 rounded-lg">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
@@ -495,17 +574,18 @@ export function ShiftDetailView() {
                               </p>
                             </div>
                           </div>
-                          
+
                           <div>
                             <p className="text-sm font-medium mb-1">Time</p>
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-muted-foreground" />
                               <p className="text-sm">
-                                {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
+                                {formatTime(shift.startTime)} -{" "}
+                                {formatTime(shift.endTime)}
                               </p>
                             </div>
                           </div>
-                          
+
                           <div>
                             <p className="text-sm font-medium mb-1">Duration</p>
                             <div className="flex items-center gap-2">
@@ -515,18 +595,23 @@ export function ShiftDetailView() {
                               </p>
                             </div>
                           </div>
-                          
+
                           {shift.recurrence.pattern !== "none" && (
                             <div>
-                              <p className="text-sm font-medium mb-1">Recurrence</p>
+                              <p className="text-sm font-medium mb-1">
+                                Recurrence
+                              </p>
                               <div className="flex items-center gap-2">
                                 <RepeatIcon className="h-4 w-4 text-muted-foreground" />
                                 <p className="text-sm capitalize">
                                   {shift.recurrence.pattern}
-                                  {shift.recurrence.occurrences ? ` (${shift.recurrence.occurrences} occurrences)` : ""}
+                                  {shift.recurrence.occurrences
+                                    ? ` (${shift.recurrence.occurrences} occurrences)`
+                                    : ""}
                                   {shift.recurrence.parentShiftId && (
                                     <span className="text-muted-foreground">
-                                      {" "}• Parent: {shift.recurrence.parentShiftId}
+                                      {" "}
+                                      • Parent: {shift.recurrence.parentShiftId}
                                     </span>
                                   )}
                                 </p>
@@ -538,32 +623,44 @@ export function ShiftDetailView() {
                     </div>
                   </div>
                 </TabsContent>
-                
+
                 <TabsContent value="instructions" className="pt-4">
                   <div className="space-y-6">
                     <div className="bg-muted/30 p-4 rounded-lg">
-                      <h3 className="text-sm font-medium mb-2">Special Instructions</h3>
+                      <h3 className="text-sm font-medium mb-2">
+                        Special Instructions
+                      </h3>
                       {shift.specialInstructions ? (
-                        <p className="text-sm whitespace-pre-wrap">{shift.specialInstructions}</p>
+                        <p className="text-sm whitespace-pre-wrap">
+                          {shift.specialInstructions}
+                        </p>
                       ) : (
-                        <p className="text-sm text-muted-foreground italic">No special instructions provided.</p>
+                        <p className="text-sm text-muted-foreground italic">
+                          No special instructions provided.
+                        </p>
                       )}
                     </div>
-                    
+
                     <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4">
-                      <h3 className="text-sm font-medium text-yellow-800 mb-2">Notes for Support Worker</h3>
+                      <h3 className="text-sm font-medium text-yellow-800 mb-2">
+                        Notes for Support Worker
+                      </h3>
                       <p className="text-sm text-yellow-700">
-                        Please ensure you arrive on time and bring all necessary items mentioned in the special instructions.
-                        If you need to reschedule or cancel, please do so at least 24 hours in advance.
+                        Please ensure you arrive on time and bring all necessary
+                        items mentioned in the special instructions. If you need
+                        to reschedule or cancel, please do so at least 24 hours
+                        in advance.
                       </p>
                     </div>
                   </div>
                 </TabsContent>
-                
+
                 <TabsContent value="history" className="pt-4">
                   <div className="space-y-4">
                     <div className="bg-muted/30 p-4 rounded-lg">
-                      <h3 className="text-sm font-medium mb-4">Shift History</h3>
+                      <h3 className="text-sm font-medium mb-4">
+                        Shift History
+                      </h3>
                       <div className="space-y-4">
                         <div className="flex items-start gap-3">
                           <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -576,24 +673,36 @@ export function ShiftDetailView() {
                             </p>
                           </div>
                         </div>
-                        
+
                         {shift.status !== "open" && (
                           <div className="flex items-start gap-3">
                             <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
                               <Clock className="h-4 w-4 text-yellow-700" />
                             </div>
                             <div>
-                              <p className="text-sm font-medium">Status Updated to "{shift.status.charAt(0).toUpperCase() + shift.status.slice(1)}"</p>
+                              <p className="text-sm font-medium">
+                                Status Updated to "
+                                {shift.status.charAt(0).toUpperCase() +
+                                  shift.status.slice(1)}
+                                "
+                              </p>
                               <p className="text-xs text-muted-foreground">
                                 {formatDateTime(shift.updatedAt)}
                               </p>
                             </div>
                           </div>
                         )}
-                        
-                        {(shift.status === "completed" || shift.status === "noShow") && (
+
+                        {(shift.status === "completed" ||
+                          shift.status === "noShow") && (
                           <div className="flex items-start gap-3">
-                            <div className={`h-8 w-8 rounded-full ${shift.status === "completed" ? "bg-green-100" : "bg-red-100"} flex items-center justify-center flex-shrink-0`}>
+                            <div
+                              className={`h-8 w-8 rounded-full ${
+                                shift.status === "completed"
+                                  ? "bg-green-100"
+                                  : "bg-red-100"
+                              } flex items-center justify-center flex-shrink-0`}
+                            >
                               {shift.status === "completed" ? (
                                 <Calendar className="h-4 w-4 text-green-700" />
                               ) : (
@@ -601,7 +710,12 @@ export function ShiftDetailView() {
                               )}
                             </div>
                             <div>
-                              <p className="text-sm font-medium">Shift {shift.status === "completed" ? "Completed" : "Marked as No-Show"}</p>
+                              <p className="text-sm font-medium">
+                                Shift{" "}
+                                {shift.status === "completed"
+                                  ? "Completed"
+                                  : "Marked as No-Show"}
+                              </p>
                               <p className="text-xs text-muted-foreground">
                                 {formatDateTime(shift.updatedAt)}
                               </p>
@@ -615,7 +729,7 @@ export function ShiftDetailView() {
               </Tabs>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="pb-4">
               <CardTitle>Actions</CardTitle>
@@ -626,21 +740,21 @@ export function ShiftDetailView() {
                   <MessageCircle className="h-4 w-4 mr-2" />
                   Message Participant
                 </Button>
-                
+
                 {!shift.isMultiWorkerShift && shift.workerId && (
                   <Button variant="outline">
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Message Support Worker
                   </Button>
                 )}
-                
+
                 {shift.isMultiWorkerShift && (
                   <Button variant="outline">
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Message All Workers
                   </Button>
                 )}
-                
+
                 {shift.recurrence.pattern !== "none" && (
                   <Button variant="outline">
                     <Calendar className="h-4 w-4 mr-2" />
@@ -651,7 +765,7 @@ export function ShiftDetailView() {
             </CardContent>
           </Card>
         </div>
-        
+
         {/* Sidebar - 1/3 width on desktop */}
         <div className="space-y-6">
           {/* Participant Card */}
@@ -663,211 +777,260 @@ export function ShiftDetailView() {
               <div className="flex items-center gap-4 mb-4">
                 <Avatar className="h-12 w-12">
                   <AvatarFallback>
-                    {typeof shift.participantId === 'object' ? shift.participantId.firstName.charAt(0) : 'P'}
-                    {typeof shift.participantId === 'object' ? shift.participantId.lastName.charAt(0) : 'U'}
+                    {typeof shift.clientId === "object"
+                      ? shift.clientId.firstName.charAt(0)
+                      : "P"}
+                    {typeof shift.clientId === "object"
+                      ? shift.clientId.lastName.charAt(0)
+                      : "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-medium">{typeof shift.participantId === 'object' ? getFullName(shift.participantId) : shift.participantId}</h3>
-                  <p className="text-sm text-muted-foreground">{typeof shift.organizationId === 'object' ? shift.organizationId.name : shift.organizationId}</p>
+                  <h3 className="font-medium">
+                    {typeof shift.clientId === "object"
+                      ? getFullName(shift.clientId)
+                      : shift.clientId}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {typeof shift.organizationId === "object"
+                      ? shift.organizationId.name
+                      : shift.organizationId}
+                  </p>
                 </div>
               </div>
-              
+
               <ul className="space-y-3">
                 <li className="flex items-center gap-3">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                 <span className="text-sm">{typeof shift.participantId === 'object' ? shift.participantId.email : 'N/A'}</span>
-               </li>
-               
-               <li className="flex items-center gap-3">
-                 <Phone className="h-4 w-4 text-muted-foreground" />
-                 <span className="text-sm">{typeof shift.participantId === 'object' ? shift.participantId.phone : 'N/A'}</span>
-               </li>
-             </ul>
-             
-             <div className="mt-4">
-               <Button variant="outline" className="w-full">
-                 <UserCircle className="h-4 w-4 mr-2" />
-                 View Participant Profile
-               </Button>
-             </div>
-           </CardContent>
-         </Card>
-         
-         {/* Support Worker Card - Single Worker */}
-         {!shift.isMultiWorkerShift && shift.workerId && (
-           <Card>
-             <CardHeader className="pb-3">
-               <CardTitle className="text-base">Support Worker</CardTitle>
-             </CardHeader>
-             <CardContent>
-               <div className="flex items-center gap-4 mb-4">
-                 <Avatar className="h-12 w-12">
-                   {typeof shift.workerId === 'object' && shift.workerId.profileImage ? (
-                     <AvatarImage 
-                       src={shift.workerId.profileImage}
-                       alt={getFullName(shift.workerId)}
-                     />
-                   ) : null}
-                   <AvatarFallback>
-                     {typeof shift.workerId === 'object' ? shift.workerId.firstName.charAt(0) : 'S'}
-                     {typeof shift.workerId === 'object' ? shift.workerId.lastName.charAt(0) : 'W'}
-                   </AvatarFallback>
-                 </Avatar>
-                 <div>
-                   <h3 className="font-medium">{typeof shift.workerId === 'object' ? getFullName(shift.workerId) : shift.workerId}</h3>
-                   <p className="text-sm text-muted-foreground">Support Worker</p>
-                 </div>
-               </div>
-               
-               <ul className="space-y-3">
-                 <li className="flex items-center gap-3">
-                   <Mail className="h-4 w-4 text-muted-foreground" />
-                   <span className="text-sm">{typeof shift.workerId === 'object' ? shift.workerId.email : 'N/A'}</span>
-                 </li>
-                 
-                 <li className="flex items-center gap-3">
-                   <Phone className="h-4 w-4 text-muted-foreground" />
-                   <span className="text-sm">{typeof shift.workerId === 'object' ? shift.workerId.phone : 'N/A'}</span>
-                 </li>
-               </ul>
-               
-               <div className="mt-4 space-y-2">
-                 <Button variant="outline" className="w-full">
-                   <UserCircle className="h-4 w-4 mr-2" />
-                   View Worker Profile
-                 </Button>
-                 
-                 <Button variant="outline" className="w-full">
-                   <Calendar className="h-4 w-4 mr-2" />
-                   View Worker Schedule
-                 </Button>
-               </div>
-             </CardContent>
-           </Card>
-         )}
-         
-         {/* Multi-Worker Summary Card */}
-         {shift.isMultiWorkerShift && (
-           <Card>
-             <CardHeader className="pb-3">
-               <CardTitle className="text-base">Support Workers</CardTitle>
-             </CardHeader>
-             <CardContent>
-               <div className="flex items-center gap-4 mb-4">
-                 <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                   <Users className="h-6 w-6 text-blue-600" />
-                 </div>
-                 <div>
-                   <h3 className="font-medium">Multi-worker shift</h3>
-                   <p className="text-sm text-muted-foreground">
-                     {shift.workerAssignments?.length || 0} workers assigned
-                   </p>
-                 </div>
-               </div>
-               
-               {shift.workerAssignments && shift.workerAssignments.length > 0 && (
-                 <div className="space-y-3">
-                   {shift.workerAssignments.slice(0, 3).map((assignment) => (
-                     <div key={assignment._id} className="flex items-center justify-between">
-                       <div className="flex items-center gap-2">
-                         <Avatar className="h-6 w-6">
-                           {assignment.workerId.profileImage ? (
-                             <AvatarImage 
-                               src={assignment.workerId.profileImage}
-                               alt={getFullName(assignment.workerId)}
-                             />
-                           ) : null}
-                           <AvatarFallback className="text-xs">
-                             {assignment.workerId.firstName.charAt(0)}
-                             {assignment.workerId.lastName.charAt(0)}
-                           </AvatarFallback>
-                         </Avatar>
-                         <span className="text-sm">{getFullName(assignment.workerId)}</span>
-                       </div>
-                       <div className="text-xs">
-                         {getStatusBadge(assignment.status)}
-                       </div>
-                     </div>
-                   ))}
-                   
-                   {shift.workerAssignments.length > 3 && (
-                     <p className="text-xs text-muted-foreground text-center pt-2">
-                       +{shift.workerAssignments.length - 3} more workers
-                     </p>
-                   )}
-                 </div>
-               )}
-               
-               <div className="mt-4">
-                 <Button variant="outline" className="w-full">
-                   <Users className="h-4 w-4 mr-2" />
-                   View All Workers
-                 </Button>
-               </div>
-             </CardContent>
-           </Card>
-         )}
-         
-         {/* No Worker Assigned Card */}
-         {!shift.isMultiWorkerShift && !shift.workerId && (
-           <Card>
-             <CardHeader className="pb-3">
-               <CardTitle className="text-base">Support Worker</CardTitle>
-             </CardHeader>
-             <CardContent>
-               <div className="text-center py-6">
-                 <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                 <p className="text-sm text-muted-foreground mb-4">
-                   No support worker assigned to this shift yet.
-                 </p>
-                 <Button variant="outline" className="w-full">
-                   <UserCircle className="h-4 w-4 mr-2" />
-                   Assign Worker
-                 </Button>
-               </div>
-             </CardContent>
-           </Card>
-         )}
-         
-         {/* System Info Card */}
-         <Card>
-           <CardHeader className="pb-3">
-             <CardTitle className="text-base">System Information</CardTitle>
-           </CardHeader>
-           <CardContent>
-             <ul className="space-y-3 text-sm">
-               <li className="flex justify-between">
-                 <span className="text-muted-foreground">Shift ID:</span>
-                 <span className="font-mono">{shift.shiftId}</span>
-               </li>
-               
-               <li className="flex justify-between">
-                 <span className="text-muted-foreground">Created:</span>
-                 <span>{formatDate(shift.createdAt)}</span>
-               </li>
-               
-               <li className="flex justify-between">
-                 <span className="text-muted-foreground">Last Updated:</span>
-                 <span>{formatDate(shift.updatedAt)}</span>
-               </li>
-               
-               <li className="flex justify-between">
-                 <span className="text-muted-foreground">Database ID:</span>
-                 <span className="font-mono truncate max-w-[180px]">{shift._id}</span>
-               </li>
-               
-               {shift.recurrence.parentShiftId && (
-                 <li className="flex justify-between">
-                   <span className="text-muted-foreground">Parent Shift:</span>
-                   <span className="font-mono truncate max-w-[180px]">{shift.recurrence.parentShiftId}</span>
-                 </li>
-               )}
-             </ul>
-           </CardContent>
-         </Card>
-       </div>
-     </div>
-   </div>
- );
+                  <span className="text-sm">
+                    {typeof shift.clientId === "object"
+                      ? shift.clientId.email
+                      : "N/A"}
+                  </span>
+                </li>
+
+                <li className="flex items-center gap-3">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">
+                    {typeof shift.clientId === "object"
+                      ? shift.clientId.phone
+                      : "N/A"}
+                  </span>
+                </li>
+              </ul>
+
+              <div className="mt-4">
+                <Button variant="outline" className="w-full">
+                  <UserCircle className="h-4 w-4 mr-2" />
+                  View Participant Profile
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Support Worker Card - Single Worker */}
+          {!shift.isMultiWorkerShift && shift.workerId && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Support Worker</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-4 mb-4">
+                  <Avatar className="h-12 w-12">
+                    {typeof shift.workerId === "object" &&
+                    shift.workerId.profileImage ? (
+                      <AvatarImage
+                        src={shift.workerId.profileImage}
+                        alt={getFullName(shift.workerId)}
+                      />
+                    ) : null}
+                    <AvatarFallback>
+                      {typeof shift.workerId === "object"
+                        ? shift.workerId.firstName.charAt(0)
+                        : "S"}
+                      {typeof shift.workerId === "object"
+                        ? shift.workerId.lastName.charAt(0)
+                        : "W"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-medium">
+                      {typeof shift.workerId === "object"
+                        ? getFullName(shift.workerId)
+                        : shift.workerId}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Support Worker
+                    </p>
+                  </div>
+                </div>
+
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">
+                      {typeof shift.workerId === "object"
+                        ? shift.workerId.email
+                        : "N/A"}
+                    </span>
+                  </li>
+
+                  <li className="flex items-center gap-3">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">
+                      {typeof shift.workerId === "object"
+                        ? shift.workerId.phone
+                        : "N/A"}
+                    </span>
+                  </li>
+                </ul>
+
+                <div className="mt-4 space-y-2">
+                  <Button variant="outline" className="w-full">
+                    <UserCircle className="h-4 w-4 mr-2" />
+                    View Worker Profile
+                  </Button>
+
+                  <Button variant="outline" className="w-full">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    View Worker Schedule
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Multi-Worker Summary Card */}
+          {shift.isMultiWorkerShift && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Workers</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Users className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Multi-worker shift</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {shift.workerAssignments?.length || 0} workers assigned
+                    </p>
+                  </div>
+                </div>
+
+                {shift.workerAssignments &&
+                  shift.workerAssignments.length > 0 && (
+                    <div className="space-y-3">
+                      {shift.workerAssignments.slice(0, 3).map((assignment) => (
+                        <div
+                          key={assignment._id}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-6 w-6">
+                              {assignment.workerId.profileImage ? (
+                                <AvatarImage
+                                  src={assignment.workerId.profileImage}
+                                  alt={getFullName(assignment.workerId)}
+                                />
+                              ) : null}
+                              <AvatarFallback className="text-xs">
+                                {assignment.workerId.firstName.charAt(0)}
+                                {assignment.workerId.lastName.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm">
+                              {getFullName(assignment.workerId)}
+                            </span>
+                          </div>
+                          <div className="text-xs">
+                            {getStatusBadge(assignment.status)}
+                          </div>
+                        </div>
+                      ))}
+
+                      {shift.workerAssignments.length > 3 && (
+                        <p className="text-xs text-muted-foreground text-center pt-2">
+                          +{shift.workerAssignments.length - 3} more workers
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                <div className="mt-4">
+                  <Button variant="outline" className="w-full">
+                    <Users className="h-4 w-4 mr-2" />
+                    View All Workers
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* No Worker Assigned Card */}
+          {!shift.isMultiWorkerShift && !shift.workerId && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Support Worker</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-6">
+                  <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No support worker assigned to this shift yet.
+                  </p>
+                  <Button variant="outline" className="w-full">
+                    <UserCircle className="h-4 w-4 mr-2" />
+                    Assign Worker
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* System Info Card */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">System Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3 text-sm">
+                <li className="flex justify-between">
+                  <span className="text-muted-foreground">Shift ID:</span>
+                  <span className="font-mono">{shift.shiftId}</span>
+                </li>
+
+                <li className="flex justify-between">
+                  <span className="text-muted-foreground">Created:</span>
+                  <span>{formatDate(shift.createdAt)}</span>
+                </li>
+
+                <li className="flex justify-between">
+                  <span className="text-muted-foreground">Last Updated:</span>
+                  <span>{formatDate(shift.updatedAt)}</span>
+                </li>
+
+                <li className="flex justify-between">
+                  <span className="text-muted-foreground">Database ID:</span>
+                  <span className="font-mono truncate max-w-[180px]">
+                    {shift._id}
+                  </span>
+                </li>
+
+                {shift.recurrence.parentShiftId && (
+                  <li className="flex justify-between">
+                    <span className="text-muted-foreground">Parent Shift:</span>
+                    <span className="font-mono truncate max-w-[180px]">
+                      {shift.recurrence.parentShiftId}
+                    </span>
+                  </li>
+                )}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
 }

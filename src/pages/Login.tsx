@@ -83,7 +83,11 @@ export default function Login() {
         >
           <div className="flex items-center gap-2 mb-2">
             {/* <Heart className="h-8 w-8 text-white drop-shadow-md" fill="white" /> */}
-            <img src="/favicon.svg" alt="Guardian Care Pro" className="h-10 w-10" />
+            <img
+              src="/favicon.svg"
+              alt="Guardian Care Pro"
+              className="h-10 w-10"
+            />
             <span className="text-2xl font-bold text-white drop-shadow-sm">
               GuardianCare+
             </span>
@@ -293,7 +297,7 @@ export default function Login() {
                   variant="outline" 
                   size="sm"
                   className="rounded-lg border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all"
-                  onClick={() => handleDemoLogin("timiayanlola@outlook.com", "participantPro23!")}
+                  onClick={() => handleDemoLogin("timiayanlola@outlook.com", "clientPro23!")}
                   disabled={login.isPending}
                 >
                   Participant

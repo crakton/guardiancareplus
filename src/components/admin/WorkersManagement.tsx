@@ -1,12 +1,12 @@
-// pages/admin/SupportWorkersPage.tsx
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
-import { 
-  Search, 
-  Filter, 
-  ChevronDown, 
-  Eye, 
+// pages/admin/WorkersPage.tsx
+import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import {
+  Search,
+  Filter,
+  ChevronDown,
+  Eye,
   Calendar,
   Users,
   CheckCircle,
@@ -19,19 +19,19 @@ import {
   Image,
   Award,
   Briefcase,
-  X
-} from 'lucide-react';
+  X,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -39,18 +39,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -59,42 +59,68 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from "@/components/ui/tooltip";
 
-import { useGetWorkers, useGetFilterOptions } from '@/hooks/useAdminUserHooks';
-import { WorkerFilters, SortOptions, PaginationOptions } from '@/api/services/adminUserService';
-import { SupportWorker, WorkerTableFilters, VerificationSummary } from '@/entities/SupportWorker';
+import { useGetWorkers, useGetFilterOptions } from "@/hooks/useAdminUserHooks";
+import {
+  WorkerFilters,
+  SortOptions,
+  PaginationOptions,
+} from "@/api/services/adminUserService";
+import {
+  Worker,
+  WorkerTableFilters,
+  VerificationSummary,
+} from "@/entities/Worker";
 
-const SupportWorkersPage: React.FC = () => {
+const WorkersPage: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // State for filters, sorting, and pagination
   const [filters, setFilters] = useState<WorkerTableFilters>({});
-  const [sort, setSort] = useState<SortOptions>({ field: 'createdAt', direction: 'desc' });
-  const [pagination, setPagination] = useState<PaginationOptions>({ page: 1, limit: 20 });
+  const [sort, setSort] = useState<SortOptions>({
+    field: "createdAt",
+    direction: "desc",
+  });
+  const [pagination, setPagination] = useState<PaginationOptions>({
+    page: 1,
+    limit: 20,
+  });
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [tempFilters, setTempFilters] = useState<WorkerTableFilters>({});
 
   // API calls
-  const { data: workersData, isLoading, error } = useGetWorkers(filters, sort, pagination);
+  const {
+    data: workersData,
+    isLoading,
+    error,
+  } = useGetWorkers(filters, sort, pagination);
   const { data: filterOptions } = useGetFilterOptions();
 
   // Handlers
-  const handleTempFilterChange = (key: keyof WorkerTableFilters, value: string | boolean | number | string[] | undefined) => {
+  const handleTempFilterChange = (
+    key: keyof WorkerTableFilters,
+    value: string | boolean | number | string[] | undefined
+  ) => {
     const newFilters = { ...tempFilters };
-    
-    if (value === 'all' || value === '' || value === undefined || (Array.isArray(value) && value.length === 0)) {
+
+    if (
+      value === "all" ||
+      value === "" ||
+      value === undefined ||
+      (Array.isArray(value) && value.length === 0)
+    ) {
       delete newFilters[key];
     } else {
       newFilters[key] = value;
     }
-    
+
     setTempFilters(newFilters);
   };
 
@@ -120,7 +146,8 @@ const SupportWorkersPage: React.FC = () => {
   };
 
   const handleSortChange = (field: string) => {
-    const newDirection = sort.field === field && sort.direction === 'asc' ? 'desc' : 'asc';
+    const newDirection =
+      sort.field === field && sort.direction === "asc" ? "desc" : "asc";
     setSort({ field, direction: newDirection });
   };
 
@@ -129,18 +156,18 @@ const SupportWorkersPage: React.FC = () => {
   };
 
   const handleViewWorker = (workerId: string) => {
-    navigate(`/admin/support-workers/${workerId}`);
+    navigate(`/admin/workers/${workerId}`);
   };
 
   const handleSearchChange = (value: string) => {
     const newFilters = { ...filters };
-    
-    if (value === '' || value === undefined) {
+
+    if (value === "" || value === undefined) {
       delete newFilters.search;
     } else {
       newFilters.search = value;
     }
-    
+
     setFilters(newFilters);
     setPagination({ ...pagination, page: 1 });
   };
@@ -148,75 +175,83 @@ const SupportWorkersPage: React.FC = () => {
   // Helper functions
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'pending':
+      case "pending":
         return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'suspended':
+      case "suspended":
         return <AlertCircle className="h-4 w-4 text-red-500" />;
-      case 'inactive':
+      case "inactive":
         return <XCircle className="h-4 w-4 text-gray-500" />;
       default:
         return <Clock className="h-4 w-4 text-gray-500" />;
     }
   };
 
-  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+  const getStatusVariant = (
+    status: string
+  ): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
-      case 'active':
-        return 'default';
-      case 'pending':
-        return 'secondary';
-      case 'suspended':
-        return 'destructive';
-      case 'inactive':
-        return 'outline';
+      case "active":
+        return "default";
+      case "pending":
+        return "secondary";
+      case "suspended":
+        return "destructive";
+      case "inactive":
+        return "outline";
       default:
-        return 'outline';
+        return "outline";
     }
   };
 
-  const calculateVerificationProgress = (verificationStatus: SupportWorker['verificationStatus']): VerificationSummary => {
+  const calculateVerificationProgress = (
+    verificationStatus: Worker["verificationStatus"]
+  ): VerificationSummary => {
     // Handle case where verificationStatus is undefined or null
     if (!verificationStatus) {
       return { total: 0, completed: 0, percentage: 0 };
     }
-    
+
     // Get all verification status values
     const statuses = Object.values(verificationStatus);
-    
+
     // Count completed verifications (true values)
-    const completed = statuses.filter(status => status === true).length;
-    
+    const completed = statuses.filter((status) => status === true).length;
+
     // Total number of verification checks
     const total = statuses.length;
-    
+
     // Calculate percentage with safe division
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-    
-    return { 
-      total, 
-      completed, 
-      percentage 
+
+    return {
+      total,
+      completed,
+      percentage,
     };
   };
 
-  const getRatingDisplay = (ratings: SupportWorker['ratings'] | undefined) => {
+  const getRatingDisplay = (ratings: Worker["ratings"] | undefined) => {
     if (!ratings || ratings.count === 0) {
       return <span className="text-muted-foreground text-sm">No ratings</span>;
     }
-    
+
     return (
       <div className="flex items-center space-x-1">
         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-        <span className="text-sm font-medium">{ratings.average.toFixed(1)}</span>
+        <span className="text-sm font-medium">
+          {ratings.average.toFixed(1)}
+        </span>
         <span className="text-xs text-muted-foreground">({ratings.count})</span>
       </div>
     );
   };
 
   // Get active filters count
-  const activeFiltersCount = Object.keys(filters).filter(key => key !== 'search').length;
+  const activeFiltersCount = Object.keys(filters).filter(
+    (key) => key !== "search"
+  ).length;
 
   // Pagination component
   const PaginationControls = () => {
@@ -230,11 +265,14 @@ const SupportWorkersPage: React.FC = () => {
     return (
       <div className="flex items-center justify-between px-2">
         <div className="text-sm text-muted-foreground">
-          Showing {((page - 1) * pagination.limit) + 1} to{' '}
-          {Math.min(page * pagination.limit, workersData.pagination.totalResults)} of{' '}
-          {workersData.pagination.totalResults} support workers
+          Showing {(page - 1) * pagination.limit + 1} to{" "}
+          {Math.min(
+            page * pagination.limit,
+            workersData.pagination.totalResults
+          )}{" "}
+          of {workersData.pagination.totalResults} workers
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
@@ -244,8 +282,11 @@ const SupportWorkersPage: React.FC = () => {
           >
             Previous
           </Button>
-          
-          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((pageNum) => (
+
+          {Array.from(
+            { length: endPage - startPage + 1 },
+            (_, i) => startPage + i
+          ).map((pageNum) => (
             <Button
               key={pageNum}
               variant={pageNum === page ? "default" : "outline"}
@@ -255,7 +296,7 @@ const SupportWorkersPage: React.FC = () => {
               {pageNum}
             </Button>
           ))}
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -275,7 +316,7 @@ const SupportWorkersPage: React.FC = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center text-red-500">
-              Error loading support workers. Please try again.
+              Error loading workers. Please try again.
             </div>
           </CardContent>
         </Card>
@@ -289,9 +330,9 @@ const SupportWorkersPage: React.FC = () => {
         {/* Header */}
         {/* <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Support Workers</h1>
+            <h1 className="text-3xl font-bold tracking-tight"> Workers</h1>
             <p className="text-muted-foreground">
-              Manage and view all support workers in the system
+              Manage and view all workers in the system
             </p>
           </div>
         </div> */}
@@ -304,7 +345,7 @@ const SupportWorkersPage: React.FC = () => {
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by name or email..."
-                value={filters.search || ''}
+                value={filters.search || ""}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 className="pl-10"
               />
@@ -318,18 +359,21 @@ const SupportWorkersPage: React.FC = () => {
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
                 {activeFiltersCount > 0 && (
-                  <Badge variant="secondary" className="ml-2 h-5 min-w-5 text-xs">
+                  <Badge
+                    variant="secondary"
+                    className="ml-2 h-5 min-w-5 text-xs"
+                  >
                     {activeFiltersCount}
                   </Badge>
                 )}
               </Button>
             </DialogTrigger>
-            
+
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Filter Support Workers</DialogTitle>
+                <DialogTitle>Filter Workers</DialogTitle>
                 <DialogDescription>
-                  Apply filters to narrow down the list of support workers
+                  Apply filters to narrow down the list of workers
                 </DialogDescription>
               </DialogHeader>
 
@@ -338,8 +382,10 @@ const SupportWorkersPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Status</Label>
                   <Select
-                    value={tempFilters.status || 'all'}
-                    onValueChange={(value) => handleTempFilterChange('status', value)}
+                    value={tempFilters.status || "all"}
+                    onValueChange={(value) =>
+                      handleTempFilterChange("status", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
@@ -359,12 +405,12 @@ const SupportWorkersPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Languages</Label>
                   <Select
-                    value={tempFilters.languages?.join(',') || 'all'}
+                    value={tempFilters.languages?.join(",") || "all"}
                     onValueChange={(value) => {
-                      if (value === 'all') {
-                        handleTempFilterChange('languages', undefined);
+                      if (value === "all") {
+                        handleTempFilterChange("languages", undefined);
                       } else {
-                        handleTempFilterChange('languages', [value]);
+                        handleTempFilterChange("languages", [value]);
                       }
                     }}
                   >
@@ -386,12 +432,19 @@ const SupportWorkersPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Email Verification</Label>
                   <Select
-                    value={tempFilters.isEmailVerified === undefined ? 'all' : tempFilters.isEmailVerified.toString()}
+                    value={
+                      tempFilters.isEmailVerified === undefined
+                        ? "all"
+                        : tempFilters.isEmailVerified.toString()
+                    }
                     onValueChange={(value) => {
-                      if (value === 'all') {
-                        handleTempFilterChange('isEmailVerified', undefined);
+                      if (value === "all") {
+                        handleTempFilterChange("isEmailVerified", undefined);
                       } else {
-                        handleTempFilterChange('isEmailVerified', value === 'true');
+                        handleTempFilterChange(
+                          "isEmailVerified",
+                          value === "true"
+                        );
                       }
                     }}
                   >
@@ -410,12 +463,22 @@ const SupportWorkersPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Profile Setup</Label>
                   <Select
-                    value={tempFilters.profileSetupComplete === undefined ? 'all' : tempFilters.profileSetupComplete.toString()}
+                    value={
+                      tempFilters.profileSetupComplete === undefined
+                        ? "all"
+                        : tempFilters.profileSetupComplete.toString()
+                    }
                     onValueChange={(value) => {
-                      if (value === 'all') {
-                        handleTempFilterChange('profileSetupComplete', undefined);
+                      if (value === "all") {
+                        handleTempFilterChange(
+                          "profileSetupComplete",
+                          undefined
+                        );
                       } else {
-                        handleTempFilterChange('profileSetupComplete', value === 'true');
+                        handleTempFilterChange(
+                          "profileSetupComplete",
+                          value === "true"
+                        );
                       }
                     }}
                   >
@@ -434,12 +497,19 @@ const SupportWorkersPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Identity Verification</Label>
                   <Select
-                    value={tempFilters.identityVerified === undefined ? 'all' : tempFilters.identityVerified.toString()}
+                    value={
+                      tempFilters.identityVerified === undefined
+                        ? "all"
+                        : tempFilters.identityVerified.toString()
+                    }
                     onValueChange={(value) => {
-                      if (value === 'all') {
-                        handleTempFilterChange('identityVerified', undefined);
+                      if (value === "all") {
+                        handleTempFilterChange("identityVerified", undefined);
                       } else {
-                        handleTempFilterChange('identityVerified', value === 'true');
+                        handleTempFilterChange(
+                          "identityVerified",
+                          value === "true"
+                        );
                       }
                     }}
                   >
@@ -458,12 +528,22 @@ const SupportWorkersPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Police Check</Label>
                   <Select
-                    value={tempFilters.policeCheckVerified === undefined ? 'all' : tempFilters.policeCheckVerified.toString()}
+                    value={
+                      tempFilters.policeCheckVerified === undefined
+                        ? "all"
+                        : tempFilters.policeCheckVerified.toString()
+                    }
                     onValueChange={(value) => {
-                      if (value === 'all') {
-                        handleTempFilterChange('policeCheckVerified', undefined);
+                      if (value === "all") {
+                        handleTempFilterChange(
+                          "policeCheckVerified",
+                          undefined
+                        );
                       } else {
-                        handleTempFilterChange('policeCheckVerified', value === 'true');
+                        handleTempFilterChange(
+                          "policeCheckVerified",
+                          value === "true"
+                        );
                       }
                     }}
                   >
@@ -482,12 +562,22 @@ const SupportWorkersPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label>NDIS Screening</Label>
                   <Select
-                    value={tempFilters.ndisWorkerScreeningVerified === undefined ? 'all' : tempFilters.ndisWorkerScreeningVerified.toString()}
+                    value={
+                      tempFilters.ndisWorkerScreeningVerified === undefined
+                        ? "all"
+                        : tempFilters.ndisWorkerScreeningVerified.toString()
+                    }
                     onValueChange={(value) => {
-                      if (value === 'all') {
-                        handleTempFilterChange('ndisWorkerScreeningVerified', undefined);
+                      if (value === "all") {
+                        handleTempFilterChange(
+                          "ndisWorkerScreeningVerified",
+                          undefined
+                        );
                       } else {
-                        handleTempFilterChange('ndisWorkerScreeningVerified', value === 'true');
+                        handleTempFilterChange(
+                          "ndisWorkerScreeningVerified",
+                          value === "true"
+                        );
                       }
                     }}
                   >
@@ -506,12 +596,19 @@ const SupportWorkersPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Onboarding</Label>
                   <Select
-                    value={tempFilters.onboardingComplete === undefined ? 'all' : tempFilters.onboardingComplete.toString()}
+                    value={
+                      tempFilters.onboardingComplete === undefined
+                        ? "all"
+                        : tempFilters.onboardingComplete.toString()
+                    }
                     onValueChange={(value) => {
-                      if (value === 'all') {
-                        handleTempFilterChange('onboardingComplete', undefined);
+                      if (value === "all") {
+                        handleTempFilterChange("onboardingComplete", undefined);
                       } else {
-                        handleTempFilterChange('onboardingComplete', value === 'true');
+                        handleTempFilterChange(
+                          "onboardingComplete",
+                          value === "true"
+                        );
                       }
                     }}
                   >
@@ -580,19 +677,21 @@ const SupportWorkersPage: React.FC = () => {
                   <Button variant="outline" onClick={resetFilters}>
                     Reset
                   </Button>
-                  {Object.keys(filters).filter(key => key !== 'search').length > 0 && (
+                  {Object.keys(filters).filter((key) => key !== "search")
+                    .length > 0 && (
                     <Button variant="outline" onClick={clearAllFilters}>
                       Clear All
                     </Button>
                   )}
                 </div>
                 <div className="flex space-x-2">
-                  <Button variant="outline" onClick={() => setIsFiltersOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsFiltersOpen(false)}
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={applyFilters}>
-                    Apply Filters
-                  </Button>
+                  <Button onClick={applyFilters}>Apply Filters</Button>
                 </div>
               </DialogFooter>
             </DialogContent>
@@ -602,9 +701,12 @@ const SupportWorkersPage: React.FC = () => {
         {/* Active Filters Display */}
         {activeFiltersCount > 0 && (
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">Active filters:</span>
+            <span className="text-sm text-muted-foreground">
+              Active filters:
+            </span>
             <Badge variant="secondary">
-              {activeFiltersCount} filter{activeFiltersCount !== 1 ? 's' : ''} applied
+              {activeFiltersCount} filter{activeFiltersCount !== 1 ? "s" : ""}{" "}
+              applied
             </Badge>
             <Button variant="ghost" size="sm" onClick={clearAllFilters}>
               <X className="h-4 w-4 mr-1" />
@@ -636,14 +738,18 @@ const SupportWorkersPage: React.FC = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Worker</TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => handleSortChange('email')}
+                        onClick={() => handleSortChange("email")}
                       >
                         <div className="flex items-center space-x-1">
                           <span>Email</span>
-                          {sort.field === 'email' && (
-                            <ChevronDown className={`h-4 w-4 ${sort.direction === 'asc' ? 'rotate-180' : ''}`} />
+                          {sort.field === "email" && (
+                            <ChevronDown
+                              className={`h-4 w-4 ${
+                                sort.direction === "asc" ? "rotate-180" : ""
+                              }`}
+                            />
                           )}
                         </div>
                       </TableHead>
@@ -651,15 +757,19 @@ const SupportWorkersPage: React.FC = () => {
                       {/* <TableHead>Rating</TableHead> */}
                       {/* <TableHead>Languages</TableHead> */}
                       <TableHead>Verification</TableHead>
-                      <TableHead>Organizations</TableHead>
-                      <TableHead 
+                      <TableHead>Households</TableHead>
+                      <TableHead
                         className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => handleSortChange('createdAt')}
+                        onClick={() => handleSortChange("createdAt")}
                       >
                         <div className="flex items-center space-x-1">
                           <span>Created</span>
-                          {sort.field === 'createdAt' && (
-                            <ChevronDown className={`h-4 w-4 ${sort.direction === 'asc' ? 'rotate-180' : ''}`} />
+                          {sort.field === "createdAt" && (
+                            <ChevronDown
+                              className={`h-4 w-4 ${
+                                sort.direction === "asc" ? "rotate-180" : ""
+                              }`}
+                            />
                           )}
                         </div>
                       </TableHead>
@@ -667,22 +777,31 @@ const SupportWorkersPage: React.FC = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {workersData?.users?.map((worker: SupportWorker) => {
-                      const verificationProgress = calculateVerificationProgress(worker.verificationStatus);
-                      
+                    {workersData?.users?.map((worker: Worker) => {
+                      const verificationProgress =
+                        calculateVerificationProgress(
+                          worker.verificationStatus
+                        );
+
                       return (
                         <TableRow key={worker._id}>
                           <TableCell>
                             <div className="flex items-center space-x-3">
                               <Avatar>
-                                <AvatarImage src={worker.profileImage} alt={`${worker.firstName} ${worker.lastName}`} />
+                                <AvatarImage
+                                  src={worker.profileImage}
+                                  alt={`${worker.firstName} ${worker.lastName}`}
+                                />
                                 <AvatarFallback>
-                                  {worker.firstName.charAt(0)}{worker.lastName.charAt(0)}
+                                  {worker.firstName.charAt(0)}
+                                  {worker.lastName.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
                                 <div className="font-medium flex items-center space-x-2">
-                                  <span>{worker.firstName} {worker.lastName}</span>
+                                  <span>
+                                    {worker.firstName} {worker.lastName}
+                                  </span>
                                   {worker.profileImage && (
                                     <Image className="h-3 w-3 text-muted-foreground" />
                                   )}
@@ -693,7 +812,7 @@ const SupportWorkersPage: React.FC = () => {
                               </div>
                             </div>
                           </TableCell>
-                          
+
                           <TableCell>
                             <div className="flex items-center space-x-2">
                               <span>{worker.email}</span>
@@ -704,7 +823,7 @@ const SupportWorkersPage: React.FC = () => {
                               )}
                             </div>
                           </TableCell>
-                          
+
                           <TableCell>
                             <div className="flex items-center space-x-2">
                               {getStatusIcon(worker.status)}
@@ -713,11 +832,11 @@ const SupportWorkersPage: React.FC = () => {
                               </Badge>
                             </div>
                           </TableCell>
-                          
+
                           {/* <TableCell>
                             {getRatingDisplay(worker.ratings)}
                           </TableCell> */}
-                          
+
                           {/* <TableCell>
                             {worker.languages && worker.languages.length > 0 ? (
                               <div className="flex flex-wrap gap-1">
@@ -736,13 +855,13 @@ const SupportWorkersPage: React.FC = () => {
                               <span className="text-muted-foreground text-sm">None</span>
                             )}
                           </TableCell> */}
-                          
+
                           <TableCell>
                             <Tooltip>
                               <TooltipTrigger>
                                 <div className="flex items-center space-x-2">
-                                  <Progress 
-                                    value={verificationProgress.percentage} 
+                                  <Progress
+                                    value={verificationProgress.percentage}
                                     className="w-16 h-2"
                                   />
                                   <span className="text-sm font-medium">
@@ -752,32 +871,70 @@ const SupportWorkersPage: React.FC = () => {
                               </TooltipTrigger>
                               <TooltipContent>
                                 <div className="space-y-1">
-                                  <div className="font-medium">Verification Status</div>
+                                  <div className="font-medium">
+                                    Verification Status
+                                  </div>
                                   {worker.verificationStatus ? (
                                     <div className="grid grid-cols-2 gap-2 text-sm">
                                       <div className="flex items-center space-x-1">
                                         <UserCheck className="h-3 w-3" />
-                                        <span>Profile: {worker.verificationStatus?.profileSetupComplete ? '✓' : '✗'}</span>
+                                        <span>
+                                          Profile:{" "}
+                                          {worker.verificationStatus
+                                            ?.profileSetupComplete
+                                            ? "✓"
+                                            : "✗"}
+                                        </span>
                                       </div>
                                       <div className="flex items-center space-x-1">
                                         <Shield className="h-3 w-3" />
-                                        <span>Identity: {worker.verificationStatus?.identityVerified ? '✓' : '✗'}</span>
+                                        <span>
+                                          Identity:{" "}
+                                          {worker.verificationStatus
+                                            ?.identityVerified
+                                            ? "✓"
+                                            : "✗"}
+                                        </span>
                                       </div>
                                       <div className="flex items-center space-x-1">
                                         <Shield className="h-3 w-3" />
-                                        <span>Police: {worker.verificationStatus?.policeCheckVerified ? '✓' : '✗'}</span>
+                                        <span>
+                                          Police:{" "}
+                                          {worker.verificationStatus
+                                            ?.policeCheckVerified
+                                            ? "✓"
+                                            : "✗"}
+                                        </span>
                                       </div>
                                       <div className="flex items-center space-x-1">
                                         <Award className="h-3 w-3" />
-                                        <span>NDIS: {worker.verificationStatus?.ndisWorkerScreeningVerified ? '✓' : '✗'}</span>
+                                        <span>
+                                          NDIS:{" "}
+                                          {worker.verificationStatus
+                                            ?.ndisWorkerScreeningVerified
+                                            ? "✓"
+                                            : "✗"}
+                                        </span>
                                       </div>
                                       <div className="flex items-center space-x-1">
                                         <CheckCircle className="h-3 w-3" />
-                                        <span>Onboarding: {worker.verificationStatus?.onboardingComplete ? '✓' : '✗'}</span>
+                                        <span>
+                                          Onboarding:{" "}
+                                          {worker.verificationStatus
+                                            ?.onboardingComplete
+                                            ? "✓"
+                                            : "✗"}
+                                        </span>
                                       </div>
                                       <div className="flex items-center space-x-1">
                                         <Briefcase className="h-3 w-3" />
-                                        <span>Fee: {worker.verificationStatus?.onboardingFeeReceived ? '✓' : '✗'}</span>
+                                        <span>
+                                          Fee:{" "}
+                                          {worker.verificationStatus
+                                            ?.onboardingFeeReceived
+                                            ? "✓"
+                                            : "✗"}
+                                        </span>
                                       </div>
                                     </div>
                                   ) : (
@@ -789,25 +946,29 @@ const SupportWorkersPage: React.FC = () => {
                               </TooltipContent>
                             </Tooltip>
                           </TableCell>
-                          
+
                           <TableCell>
                             <div className="flex items-center space-x-1">
                               <Users className="h-4 w-4 text-muted-foreground" />
                               <span className="text-sm">
-                                {worker.organizationCount} org{worker.organizationCount !== 1 ? 's' : ''}
+                                {worker.organizationCount} org
+                                {worker.organizationCount !== 1 ? "s" : ""}
                               </span>
                             </div>
                           </TableCell>
-                          
+
                           <TableCell>
                             <div className="flex items-center space-x-1">
                               <Calendar className="h-4 w-4 text-muted-foreground" />
                               <span className="text-sm">
-                                {format(new Date(worker.createdAt), 'MMM dd, yyyy')}
+                                {format(
+                                  new Date(worker.createdAt),
+                                  "MMM dd, yyyy"
+                                )}
                               </span>
                             </div>
                           </TableCell>
-                          
+
                           <TableCell>
                             <Button
                               variant="outline"
@@ -828,12 +989,11 @@ const SupportWorkersPage: React.FC = () => {
                 {workersData?.users?.length === 0 && (
                   <div className="text-center py-12">
                     <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium">No support workers found</h3>
+                    <h3 className="text-lg font-medium">No workers found</h3>
                     <p className="text-muted-foreground">
-                      {Object.keys(filters).length > 0 
+                      {Object.keys(filters).length > 0
                         ? "Try adjusting your filters to see more results."
-                        : "No support workers have been registered yet."
-                      }
+                        : "No workers have been registered yet."}
                     </p>
                   </div>
                 )}
@@ -853,4 +1013,4 @@ const SupportWorkersPage: React.FC = () => {
   );
 };
 
-export default SupportWorkersPage;
+export default WorkersPage;

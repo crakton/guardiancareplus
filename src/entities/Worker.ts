@@ -1,12 +1,11 @@
-
-// import { SupportWorkerSkill } from './types';
+// import { WorkerSkill } from './types';
 // import { User } from './User';
 
-// export interface SupportWorker extends User {
-//   skills?: SupportWorkerSkill[];
+// export interface Worker extends User {
+//   skills?: WorkerSkill[];
 //   experience: {
 //     title: string;
-//     organization: string;
+//     household: string;
 //     startDate: Date;
 //     endDate?: Date;
 //     description: string;
@@ -31,11 +30,11 @@
 //   languages: string[];
 // }
 
-// entities/SupportWorker.ts
+// entities/Worker.ts
 
 // types/supportWorker.ts
 
-export interface SupportWorker {
+export interface Worker {
   _id: string;
   email: string;
   firstName: string;
@@ -64,7 +63,7 @@ export interface SupportWorker {
     onboardingComplete: boolean;
     onboardingFeeReceived: boolean;
   };
-  organizations: string[];
+  households: string[];
   qualifications: Qualification[];
   experience: Experience[];
   shiftRates: ShiftRate[];
@@ -74,7 +73,7 @@ export interface SupportWorker {
   profileImage?: string;
   __v: number;
   organizationCount: number;
-  // Some workers might have participant-like fields (legacy data)
+  // Some workers might have client-like fields (legacy data)
   supportNeeds?: string[];
   subscription?: {
     tier: string;
@@ -100,7 +99,7 @@ export interface Qualification {
 export interface Experience {
   _id: string;
   jobTitle: string;
-  organization: string;
+  household: string;
   startDate: string;
   endDate?: string;
   description: string;
@@ -138,8 +137,8 @@ export interface WorkerTableFilters {
   ndisWorkerScreeningVerified?: boolean;
   onboardingComplete?: boolean;
   onboardingFeeReceived?: boolean;
-  minOrganizations?: number;
-  maxOrganizations?: number;
+  minHouseholds?: number;
+  maxHouseholds?: number;
 }
 
 // Verification status summary
@@ -150,4 +149,4 @@ export interface VerificationSummary {
 }
 
 // Helper type for verification status keys
-export type VerificationStatusKey = keyof SupportWorker['verificationStatus'];
+export type VerificationStatusKey = keyof Worker["verificationStatus"];

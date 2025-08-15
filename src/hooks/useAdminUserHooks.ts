@@ -1,37 +1,56 @@
 // React Query hooks (useAdminUserHooks.ts)
-import { AdminFilters, adminUserService, FilterOptions, PaginatedUserResponse, PaginationOptions, ParticipantFilters, SortOptions, UserStatistics, WorkerFilters } from '@/api/services/adminUserService';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import {
+  AdminFilters,
+  adminUserService,
+  FilterOptions,
+  PaginatedUserResponse,
+  PaginationOptions,
+  ClientFilters,
+  SortOptions,
+  UserStatistics,
+  WorkerFilters,
+} from "@/api/services/adminUserService";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
 // Query keys
 export const adminUserKeys = {
-  all: ['admin-users'] as const,
-  participants: () => [...adminUserKeys.all, 'participants'] as const,
-  participantsList: (filters?: ParticipantFilters, sort?: SortOptions, pagination?: PaginationOptions) => 
-    [...adminUserKeys.participants(), 'list', filters, sort, pagination] as const,
-  workers: () => [...adminUserKeys.all, 'workers'] as const,
-  workersList: (filters?: WorkerFilters, sort?: SortOptions, pagination?: PaginationOptions) => 
-    [...adminUserKeys.workers(), 'list', filters, sort, pagination] as const,
-  admins: () => [...adminUserKeys.all, 'admins'] as const,
-  adminsList: (filters?: AdminFilters, sort?: SortOptions, pagination?: PaginationOptions) => 
-    [...adminUserKeys.admins(), 'list', filters, sort, pagination] as const,
-  filterOptions: () => [...adminUserKeys.all, 'filter-options'] as const,
-  statistics: () => [...adminUserKeys.all, 'statistics'] as const,
+  all: ["admin-users"] as const,
+  clients: () => [...adminUserKeys.all, "clients"] as const,
+  clientsList: (
+    filters?: ClientFilters,
+    sort?: SortOptions,
+    pagination?: PaginationOptions
+  ) => [...adminUserKeys.clients(), "list", filters, sort, pagination] as const,
+  workers: () => [...adminUserKeys.all, "workers"] as const,
+  workersList: (
+    filters?: WorkerFilters,
+    sort?: SortOptions,
+    pagination?: PaginationOptions
+  ) => [...adminUserKeys.workers(), "list", filters, sort, pagination] as const,
+  admins: () => [...adminUserKeys.all, "admins"] as const,
+  adminsList: (
+    filters?: AdminFilters,
+    sort?: SortOptions,
+    pagination?: PaginationOptions
+  ) => [...adminUserKeys.admins(), "list", filters, sort, pagination] as const,
+  filterOptions: () => [...adminUserKeys.all, "filter-options"] as const,
+  statistics: () => [...adminUserKeys.all, "statistics"] as const,
 };
 
-// Hook to get participants
-export const useGetParticipants = (
-  filters?: ParticipantFilters,
+// Hook to get clients
+export const useGetClients = (
+  filters?: ClientFilters,
   sort?: SortOptions,
   pagination?: PaginationOptions
 ): UseQueryResult<PaginatedUserResponse<any>> => {
   return useQuery({
-    queryKey: adminUserKeys.participantsList(filters, sort, pagination),
-    queryFn: () => adminUserService.getParticipants(filters, sort, pagination),
+    queryKey: adminUserKeys.clientsList(filters, sort, pagination),
+    queryFn: () => adminUserService.getClients(filters, sort, pagination),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
-// Hook to get support workers
+// Hook to get workers
 export const useGetWorkers = (
   filters?: WorkerFilters,
   sort?: SortOptions,

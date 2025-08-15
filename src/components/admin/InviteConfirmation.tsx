@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { 
-  CheckCircle, 
-  XCircle, 
-  ArrowLeft, 
-  Calendar, 
-  Clock, 
+import {
+  CheckCircle,
+  XCircle,
+  ArrowLeft,
+  Calendar,
+  Clock,
   MessageCircle,
   FileText,
-  Send 
+  Send,
 } from "lucide-react";
-import { 
+import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle 
+  CardTitle,
 } from "@/components/ui/card";
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -50,7 +50,7 @@ export function InviteConfirmation() {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const action = queryParams.get("action") as ActionType;
-    
+
     if (action && ["make-available", "accept", "decline"].includes(action)) {
       setActionType(action);
     } else {
@@ -62,10 +62,10 @@ export function InviteConfirmation() {
     setTimeout(() => {
       setInviteDetails({
         inviteId,
-        participantName: "Adams Ben",
+        clientName: "Adams Ben",
         workerName: "Priscilla Friday",
         inviteDate: new Date().toISOString(),
-        status: "pending"
+        status: "pending",
       });
     }, 300);
   }, [location.search, inviteId, navigate]);
@@ -75,58 +75,66 @@ export function InviteConfirmation() {
       case "make-available":
         return {
           title: "Make Invitation Available",
-          description: "You're about to make this invitation available to the support worker.",
-          confirmText: "This will notify the support worker that they have a new connection request. They will be able to view and respond to the invitation.",
+          description:
+            "You're about to make this invitation available to the support worker.",
+          confirmText:
+            "This will notify the support worker that they have a new connection request. They will be able to view and respond to the invitation.",
           icon: <Send className="h-12 w-12 text-blue-500 mb-2" />,
           color: "blue",
           buttonText: "Make Available",
-          successMessage: "Invitation has been made available to the support worker."
+          successMessage:
+            "Invitation has been made available to the support worker.",
         };
       case "accept":
         return {
           title: "Accept Invitation",
-          description: "You're about to accept this invitation on behalf of the support worker.",
-          confirmText: "This will create a connection between the participant and support worker. Both parties will be notified of this action.",
+          description:
+            "You're about to accept this invitation on behalf of the support worker.",
+          confirmText:
+            "This will create a connection between the client and support worker. Both parties will be notified of this action.",
           icon: <CheckCircle className="h-12 w-12 text-green-500 mb-2" />,
           color: "green",
           buttonText: "Accept Invitation",
-          successMessage: "Invitation has been accepted successfully."
+          successMessage: "Invitation has been accepted successfully.",
         };
       case "decline":
         return {
           title: "Decline Invitation",
-          description: "You're about to decline this invitation on behalf of the support worker.",
-          confirmText: "This will reject the connection request. The participant will be notified that their request was declined.",
+          description:
+            "You're about to decline this invitation on behalf of the support worker.",
+          confirmText:
+            "This will reject the connection request. The client will be notified that their request was declined.",
           icon: <XCircle className="h-12 w-12 text-red-500 mb-2" />,
           color: "red",
           buttonText: "Decline Invitation",
-          successMessage: "Invitation has been declined."
+          successMessage: "Invitation has been declined.",
         };
       default:
         return {
           title: "Invalid Action",
           description: "The requested action is not valid.",
-          confirmText: "Please return to the invitation details page and try again.",
+          confirmText:
+            "Please return to the invitation details page and try again.",
           icon: <XCircle className="h-12 w-12 text-gray-500 mb-2" />,
           color: "gray",
           buttonText: "Go Back",
-          successMessage: ""
+          successMessage: "",
         };
     }
   };
 
   const handleConfirmAction = () => {
     setConfirming(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       setConfirming(false);
       setActionCompleted(true);
-      
+
       // Show toast notification
       toast({
         title: getActionContent().successMessage,
-        description: `Action completed for invitation from ${inviteDetails?.participantName} to ${inviteDetails?.workerName}.`,
+        description: `Action completed for invitation from ${inviteDetails?.clientName} to ${inviteDetails?.workerName}.`,
       });
     }, 1500);
   };
@@ -152,7 +160,7 @@ export function InviteConfirmation() {
     blue: "border-blue-200 bg-blue-50",
     green: "border-green-200 bg-green-50",
     red: "border-red-200 bg-red-50",
-    gray: "border-gray-200 bg-gray-50"
+    gray: "border-gray-200 bg-gray-50",
   }[actionContent.color as keyof typeof colorClass];
 
   return (
@@ -161,7 +169,7 @@ export function InviteConfirmation() {
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to Invitation Details
       </Button>
-      
+
       <Card className="border-2 shadow-sm">
         <CardHeader className={`border-b ${colorClass}`}>
           <div className="flex flex-col items-center text-center">
@@ -172,7 +180,7 @@ export function InviteConfirmation() {
             </CardDescription>
           </div>
         </CardHeader>
-        
+
         <CardContent className="pt-6">
           {!actionCompleted ? (
             <div className="space-y-6">
@@ -181,7 +189,7 @@ export function InviteConfirmation() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground">Participant:</p>
-                    <p className="font-medium">{inviteDetails.participantName}</p>
+                    <p className="font-medium">{inviteDetails.clientName}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Support Worker:</p>
@@ -190,36 +198,46 @@ export function InviteConfirmation() {
                   <div>
                     <p className="text-muted-foreground">Invitation Date:</p>
                     <p className="font-medium">
-                      {new Date(inviteDetails.inviteDate).toLocaleDateString('en-AU', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
+                      {new Date(inviteDetails.inviteDate).toLocaleDateString(
+                        "en-AU",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )}
                     </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Status:</p>
-                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
+                    <Badge
+                      variant="outline"
+                      className="bg-yellow-50 text-yellow-700 border-yellow-300"
+                    >
                       Pending
                     </Badge>
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-muted/40 p-4 rounded-lg">
                 <p className="text-sm">{actionContent.confirmText}</p>
               </div>
-              
+
               <Separator />
-              
+
               <div className="flex flex-col gap-4">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button 
+                    <Button
                       className={`w-full ${
-                        actionContent.color === "green" ? "bg-green-600 hover:bg-green-700" :
-                        actionContent.color === "red" ? "bg-red-600 hover:bg-red-700" :
-                        actionContent.color === "blue" ? "bg-blue-600 hover:bg-blue-700" : ""
+                        actionContent.color === "green"
+                          ? "bg-green-600 hover:bg-green-700"
+                          : actionContent.color === "red"
+                          ? "bg-red-600 hover:bg-red-700"
+                          : actionContent.color === "blue"
+                          ? "bg-blue-600 hover:bg-blue-700"
+                          : ""
                       }`}
                     >
                       {confirming ? (
@@ -234,18 +252,23 @@ export function InviteConfirmation() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Confirm {actionContent.title}</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        Confirm {actionContent.title}
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to {actionType} this invitation? This action cannot be undone.
+                        Are you sure you want to {actionType} this invitation?
+                        This action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleConfirmAction}>Confirm</AlertDialogAction>
+                      <AlertDialogAction onClick={handleConfirmAction}>
+                        Confirm
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-                
+
                 <Button variant="outline" onClick={handleGoBack}>
                   Cancel
                 </Button>
@@ -256,25 +279,35 @@ export function InviteConfirmation() {
               <div className="rounded-full bg-green-100 p-3">
                 <CheckCircle className="h-12 w-12 text-green-600" />
               </div>
-              
+
               <div>
-                <h2 className="text-xl font-semibold mb-1">Action Completed Successfully</h2>
+                <h2 className="text-xl font-semibold mb-1">
+                  Action Completed Successfully
+                </h2>
                 <p className="text-muted-foreground">
                   {actionContent.successMessage}
                 </p>
               </div>
-              
+
               <div className="space-y-3 w-full max-w-xs">
                 <Button className="w-full" onClick={handleGoToInvites}>
                   Return to Invitations
                 </Button>
-                
-                <Button variant="outline" className="w-full" onClick={handleGoBack}>
+
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoBack}
+                >
                   Back to Invitation Details
                 </Button>
-                
+
                 {actionType === "accept" && (
-                  <Button variant="outline" className="w-full" onClick={() => navigate(`/admin/chat/${inviteId}`)}>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => navigate(`/admin/chat/${inviteId}`)}
+                  >
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Open Chat with Support Worker
                   </Button>

@@ -15,21 +15,23 @@ export interface Timesheet {
     _id: string;
     name: string;
   };
-  participantId: {
+  clientId: {
     _id: string;
     email: string;
     firstName: string;
     lastName: string;
     phone: string;
   };
-  workerId: string | {
-    _id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    profileImage?: string;
-  };
+  workerId:
+    | string
+    | {
+        _id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        phone: string;
+        profileImage?: string;
+      };
   isMultiWorkerShift: boolean;
   scheduledStartTime: string;
   scheduledEndTime: string;
@@ -41,7 +43,7 @@ export interface Timesheet {
   distanceTravelAmount: number;
   notes: string;
   expenses: Expense[];
-  participantExpensesTotal: number;
+  clientExpensesTotal: number;
   workerExpensesTotal: number;
   totalExpenses: number;
   rateCalculations: RateCalculation[];
@@ -63,7 +65,7 @@ export interface Expense {
   description: string;
   amount: number;
   receiptUrl?: string;
-  payer: 'participant' | 'supportWorker';
+  payer: "client" | "supportWorker";
   _id: string;
 }
 
@@ -83,34 +85,34 @@ export interface RateCalculation {
   _id: string;
 }
 
-export type ServiceType = 
-  | 'personalCare' 
-  | 'communityAccess' 
-  | 'socialSupport' 
-  | 'domesticAssistance'
-  | 'transportSupport'
-  | 'skillDevelopment';
+export type ServiceType =
+  | "personalCare"
+  | "communityAccess"
+  | "socialSupport"
+  | "domesticAssistance"
+  | "transportSupport"
+  | "skillDevelopment";
 
-export type TimesheetStatus = 
-  | 'pending' 
-  | 'approved' 
-  | 'rejected' 
-  | 'revised' 
-  | 'processed';
+export type TimesheetStatus =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "revised"
+  | "processed";
 
 // Filter interfaces
 export interface TimesheetFilters {
   status?: TimesheetStatus;
   startDate?: string; // ISO date string for filtering by createdAt
   endDate?: string; // ISO date string for filtering by createdAt
-  participantId?: string;
+  clientId?: string;
 }
 
 // Client-side filters (for frontend processing)
 export interface TimesheetClientFilters extends TimesheetFilters {
-  search?: string; // For searching participant name, worker name, shift ID
-  sortField?: 'createdAt' | 'scheduledStartTime' | 'totalAmount';
-  sortDirection?: 'asc' | 'desc';
+  search?: string; // For searching client name, worker name, shift ID
+  sortField?: "createdAt" | "scheduledStartTime" | "totalAmount";
+  sortDirection?: "asc" | "desc";
   page?: number;
   limit?: number;
 }
@@ -148,43 +150,46 @@ export interface ProcessedTimesheetData {
 
 // Service type display names
 export const SERVICE_TYPE_LABELS: Record<ServiceType, string> = {
-  personalCare: 'Personal Care',
-  communityAccess: 'Community Access',
-  socialSupport: 'Social Support',
-  domesticAssistance: 'Domestic Assistance',
-  transportSupport: 'Transport Support',
-  skillDevelopment: 'Skill Development',
+  personalCare: "Personal Care",
+  communityAccess: "Community Access",
+  socialSupport: "Social Support",
+  domesticAssistance: "Domestic Assistance",
+  transportSupport: "Transport Support",
+  skillDevelopment: "Skill Development",
 };
 
 // Status display configuration
-export const TIMESHEET_STATUS_CONFIG: Record<TimesheetStatus, {
-  label: string;
-  variant: 'default' | 'secondary' | 'destructive' | 'outline';
-  color: string;
-}> = {
+export const TIMESHEET_STATUS_CONFIG: Record<
+  TimesheetStatus,
+  {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+    color: string;
+  }
+> = {
   pending: {
-    label: 'Pending',
-    variant: 'secondary',
-    color: 'text-yellow-600',
+    label: "Pending",
+    variant: "secondary",
+    color: "text-yellow-600",
   },
   approved: {
-    label: 'Approved',
-    variant: 'default',
-    color: 'text-green-600',
+    label: "Approved",
+    variant: "default",
+    color: "text-green-600",
   },
   rejected: {
-    label: 'Rejected',
-    variant: 'destructive',
-    color: 'text-red-600',
+    label: "Rejected",
+    variant: "destructive",
+    color: "text-red-600",
   },
   revised: {
-    label: 'Revised',
-    variant: 'outline',
-    color: 'text-blue-600',
+    label: "Revised",
+    variant: "outline",
+    color: "text-blue-600",
   },
   processed: {
-    label: 'Processed',
-    variant: 'default',
-    color: 'text-gray-600',
+    label: "Processed",
+    variant: "default",
+    color: "text-gray-600",
   },
 };

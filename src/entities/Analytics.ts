@@ -4,12 +4,12 @@
  * Common date range options
  */
 export enum DateRangeType {
-  TODAY = 'today',
-  WEEK = 'week',
-  MONTH = 'month',
-  QUARTER = 'quarter',
-  YEAR = 'year',
-  CUSTOM = 'custom'
+  TODAY = "today",
+  WEEK = "week",
+  MONTH = "month",
+  QUARTER = "quarter",
+  YEAR = "year",
+  CUSTOM = "custom",
 }
 
 /**
@@ -37,7 +37,7 @@ export interface ComparisonData {
   current: number;
   previous: number;
   percentageChange: number;
-  trend: 'up' | 'down' | 'stable';
+  trend: "up" | "down" | "stable";
 }
 
 /**
@@ -55,7 +55,7 @@ export interface ChartConfig {
   id: string;
   title: string;
   description?: string;
-  type: 'line' | 'bar' | 'pie' | 'area' | 'scatter';
+  type: "line" | "bar" | "pie" | "area" | "scatter";
   data: TrendDataPoint[] | any[];
   dataKey: string;
   xAxisKey: string;
@@ -78,13 +78,13 @@ export interface StatCardConfig {
   };
   additionalText?: string;
   className?: string;
-  trend?: 'up' | 'down' | 'none';
+  trend?: "up" | "down" | "none";
 }
 
 /**
  * Export format options
  */
-export type ExportFormat = 'pdf' | 'csv' | 'excel' | 'json';
+export type ExportFormat = "pdf" | "csv" | "excel" | "json";
 
 /**
  * Date range preset option
@@ -93,13 +93,19 @@ export interface DateRangeOption {
   label: string;
   value: DateRangeType;
   period?: number;
-  unit?: 'day' | 'week' | 'month' | 'year';
+  unit?: "day" | "week" | "month" | "year";
 }
 
 /**
  * Analytics time series grouping
  */
-export type TimeSeriesGrouping = 'hourly' | 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+export type TimeSeriesGrouping =
+  | "hourly"
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "quarterly"
+  | "yearly";
 
 /**
  * User distribution by type
@@ -118,7 +124,7 @@ export interface FinancialMetric {
   label: string;
   value: number;
   change?: number;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   color?: string;
 }
 
@@ -129,7 +135,7 @@ export interface OperationalMetric {
   label: string;
   value: number | string;
   change?: number;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   icon?: React.ReactNode;
   color?: string;
 }
@@ -165,7 +171,7 @@ export interface PlatformMetricsSummary {
     pending: number;
     growth: number;
   };
-  organizations: {
+  households: {
     total: number;
     active: number;
     pending_invites: number;

@@ -1,8 +1,13 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-export type ServiceCategory = 'personal-care' | 'transport' | 'therapy' | 'social-support' | 'household';
-export type ShiftView = 'list' | 'calendar';
-export type ParticipantType = 'participant' | 'guardian';
+export type ServiceCategory =
+  | "personal-care"
+  | "transport"
+  | "therapy"
+  | "social-support"
+  | "household";
+export type ShiftView = "list" | "calendar";
+export type ParticipantType = "client" | "guardian";
 
 export interface Worker {
   id: string;
@@ -28,8 +33,8 @@ export interface Shift {
     name: string;
     role: string;
   };
-  participantId: string;
-  participant: {
+  clientId: string;
+  client: {
     name: string;
     type: ParticipantType;
     contactNumber?: string;
@@ -38,7 +43,7 @@ export interface Shift {
   timeStart: string;
   timeEnd: string;
   location: string;
-  status: 'scheduled' | 'completed' | 'cancelled';
+  status: "scheduled" | "completed" | "cancelled";
   serviceCategory?: ServiceCategory;
   notes?: string;
 }
@@ -56,19 +61,21 @@ interface ShiftState {
     timeStart: string;
     timeEnd: string;
     workerId: string | null;
-    participantId: string | null;
+    clientId: string | null;
     notes: string;
   };
-  
+
   // Actions
   setView: (view: ShiftView) => void;
   setSearchQuery: (query: string) => void;
   filterShifts: () => void;
   toggleBookingModal: () => void;
   setBookingStep: (step: number) => void;
-  updateCurrentBooking: (booking: Partial<ShiftState['currentBooking']>) => void;
+  updateCurrentBooking: (
+    booking: Partial<ShiftState["currentBooking"]>
+  ) => void;
   resetCurrentBooking: () => void;
-  addShift: (shift: Omit<Shift, 'id'>) => void;
+  addShift: (shift: Omit<Shift, "id">) => void;
 }
 
 // Mock data for shifts
@@ -80,18 +87,18 @@ const initialShifts: Shift[] = [
       name: "Sarah Johnson",
       role: "Physical Therapist",
     },
-    participantId: "p1",
-    participant: {
+    clientId: "p1",
+    client: {
       name: "Emma Davis",
-      type: "participant",
-      contactNumber: "123-456-7890"
+      type: "client",
+      contactNumber: "123-456-7890",
     },
     date: "2025-03-13",
     timeStart: "9:00 AM",
     timeEnd: "11:00 AM",
     location: "Home",
     status: "scheduled",
-    serviceCategory: "therapy"
+    serviceCategory: "therapy",
   },
   {
     id: "2",
@@ -100,18 +107,18 @@ const initialShifts: Shift[] = [
       name: "Michael Smith",
       role: "Support Worker",
     },
-    participantId: "p2",
-    participant: {
+    clientId: "p2",
+    client: {
       name: "Robert Anderson",
-      type: "participant",
-      contactNumber: "234-567-8901"
+      type: "client",
+      contactNumber: "234-567-8901",
     },
     date: "2025-03-16",
     timeStart: "2:00 PM",
     timeEnd: "6:00 PM",
     location: "Community Center",
     status: "scheduled",
-    serviceCategory: "social-support"
+    serviceCategory: "social-support",
   },
   {
     id: "3",
@@ -120,18 +127,18 @@ const initialShifts: Shift[] = [
       name: "Emma Wilson",
       role: "Personal Care Assistant",
     },
-    participantId: "g1",
-    participant: {
+    clientId: "g1",
+    client: {
       name: "Jennifer Parker",
       type: "guardian",
-      contactNumber: "345-678-9012"
+      contactNumber: "345-678-9012",
     },
     date: "2025-03-18",
     timeStart: "10:00 AM",
     timeEnd: "12:30 PM",
     location: "Home",
     status: "scheduled",
-    serviceCategory: "personal-care"
+    serviceCategory: "personal-care",
   },
   {
     id: "4",
@@ -140,18 +147,18 @@ const initialShifts: Shift[] = [
       name: "David Thompson",
       role: "Transport Assistant",
     },
-    participantId: "g2",
-    participant: {
+    clientId: "g2",
+    client: {
       name: "William Brooks",
       type: "guardian",
-      contactNumber: "456-789-0123"
+      contactNumber: "456-789-0123",
     },
     date: "2025-03-20",
     timeStart: "1:00 PM",
     timeEnd: "3:00 PM",
     location: "Medical Appointment",
     status: "scheduled",
-    serviceCategory: "transport"
+    serviceCategory: "transport",
   },
   {
     id: "5",
@@ -160,38 +167,38 @@ const initialShifts: Shift[] = [
       name: "Jessica Parker",
       role: "Household Assistant",
     },
-    participantId: "p3",
-    participant: {
+    clientId: "p3",
+    client: {
       name: "Thomas Miller",
-      type: "participant",
-      contactNumber: "567-890-1234"
+      type: "client",
+      contactNumber: "567-890-1234",
     },
     date: "2025-03-22",
     timeStart: "9:00 AM",
     timeEnd: "12:00 PM",
     location: "Home",
     status: "scheduled",
-    serviceCategory: "household"
-  }
+    serviceCategory: "household",
+  },
 ];
 
 const useShiftStore = create<ShiftState>((set, get) => ({
   shifts: initialShifts,
   filteredShifts: initialShifts,
-  currentView: 'list',
-  searchQuery: '',
+  currentView: "list",
+  searchQuery: "",
   isBookingModalOpen: false,
   bookingStep: 1,
   currentBooking: {
     serviceCategory: null,
     date: null,
-    timeStart: '9:00 AM',
-    timeEnd: '10:00 AM',
+    timeStart: "9:00 AM",
+    timeEnd: "10:00 AM",
     workerId: null,
-    participantId: null,
-    notes: '',
+    clientId: null,
+    notes: "",
   },
-  
+
   // Actions
   setView: (view) => set({ currentView: view }),
   setSearchQuery: (query) => {
@@ -201,43 +208,50 @@ const useShiftStore = create<ShiftState>((set, get) => ({
   filterShifts: () => {
     const { shifts, searchQuery } = get();
     const query = searchQuery.toLowerCase();
-    
-    const filtered = shifts.filter(shift => 
-      shift.worker.name.toLowerCase().includes(query) ||
-      shift.worker.role.toLowerCase().includes(query) ||
-      shift.participant.name.toLowerCase().includes(query) ||
-      shift.location.toLowerCase().includes(query) ||
-      shift.date.toLowerCase().includes(query)
+
+    const filtered = shifts.filter(
+      (shift) =>
+        shift.worker.name.toLowerCase().includes(query) ||
+        shift.worker.role.toLowerCase().includes(query) ||
+        shift.client.name.toLowerCase().includes(query) ||
+        shift.location.toLowerCase().includes(query) ||
+        shift.date.toLowerCase().includes(query)
     );
-    
+
     set({ filteredShifts: filtered });
   },
-  toggleBookingModal: () => set(state => ({ isBookingModalOpen: !state.isBookingModalOpen, bookingStep: 1 })),
+  toggleBookingModal: () =>
+    set((state) => ({
+      isBookingModalOpen: !state.isBookingModalOpen,
+      bookingStep: 1,
+    })),
   setBookingStep: (step) => set({ bookingStep: step }),
-  updateCurrentBooking: (booking) => set(state => ({
-    currentBooking: { ...state.currentBooking, ...booking }
-  })),
-  resetCurrentBooking: () => set({
-    currentBooking: {
-      serviceCategory: null,
-      date: null,
-      timeStart: '9:00 AM',
-      timeEnd: '10:00 AM',
-      workerId: null,
-      participantId: null,
-      notes: '',
-    },
-  }),
+  updateCurrentBooking: (booking) =>
+    set((state) => ({
+      currentBooking: { ...state.currentBooking, ...booking },
+    })),
+  resetCurrentBooking: () =>
+    set({
+      currentBooking: {
+        serviceCategory: null,
+        date: null,
+        timeStart: "9:00 AM",
+        timeEnd: "10:00 AM",
+        workerId: null,
+        clientId: null,
+        notes: "",
+      },
+    }),
   addShift: (shiftData) => {
     const newShift: Shift = {
       id: Math.random().toString(36).substring(2, 9),
       ...shiftData,
     };
-    set(state => ({
+    set((state) => ({
       shifts: [...state.shifts, newShift],
       filteredShifts: [...state.shifts, newShift],
     }));
-  }
+  },
 }));
 
 export default useShiftStore;

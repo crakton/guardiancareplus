@@ -1,5 +1,5 @@
 // adminUserService.ts
-import { get } from '../apiClient';
+import { get } from "../apiClient";
 
 // Base filter interface
 export interface BaseUserFilters {
@@ -11,17 +11,17 @@ export interface BaseUserFilters {
   hasProfileImage?: boolean;
 }
 
-// Participant-specific filters
-export interface ParticipantFilters extends BaseUserFilters {
+// Client-specific filters
+export interface ClientFilters extends BaseUserFilters {
   hasGuardian?: boolean;
   subscriptionTier?: string;
-  subscriptionStatus?: 'active' | 'inactive';
+  subscriptionStatus?: "active" | "inactive";
   hasNdisNumber?: boolean;
   requiresSupervision?: boolean;
-  hasOrganization?: boolean;
+  hasHousehold?: boolean;
 }
 
-// Support Worker-specific filters
+//  Worker-specific filters
 export interface WorkerFilters extends BaseUserFilters {
   skills?: string[];
   serviceAreas?: string[];
@@ -40,17 +40,17 @@ export interface WorkerFilters extends BaseUserFilters {
   ndisWorkerScreeningVerified?: boolean;
   onboardingComplete?: boolean;
   onboardingFeeReceived?: boolean;
-  minOrganizations?: number;
-  maxOrganizations?: number;
+  minHouseholds?: number;
+  maxHouseholds?: number;
 }
 
 // Admin-specific filters
 export interface AdminFilters extends BaseUserFilters {
   adminType?: string;
-  hasAssignedOrganizations?: boolean;
+  hasAssignedHouseholds?: boolean;
   canManageUsers?: boolean;
   canManageWorkers?: boolean;
-  canManageParticipants?: boolean;
+  canManageClients?: boolean;
   canApproveInvites?: boolean;
   canManageServiceAgreements?: boolean;
   canManageSubscriptions?: boolean;
@@ -61,7 +61,7 @@ export interface AdminFilters extends BaseUserFilters {
 // Sorting options
 export interface SortOptions {
   field: string;
-  direction: 'asc' | 'desc';
+  direction: "asc" | "desc";
 }
 
 // Pagination options
@@ -88,12 +88,12 @@ export interface PaginatedUserResponse<T> {
 export interface UserStatistics {
   overview: {
     totalUsers: number;
-    totalParticipants: number;
+    totalClients: number;
     totalWorkers: number;
     totalAdmins: number;
   };
   verification: {
-    participants: {
+    clients: {
       verified: number;
       unverified: number;
     };
@@ -123,17 +123,17 @@ export interface FilterOptions {
 
 // Helper function to build query string from filters
 const buildQueryString = (
-  filters: Record<string, any>, 
-  sort: SortOptions, 
+  filters: Record<string, any>,
+  sort: SortOptions,
   pagination: PaginationOptions
 ): string => {
   const params = new URLSearchParams();
 
   // Add filters
   Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       if (Array.isArray(value)) {
-        params.append(key, value.join(','));
+        params.append(key, value.join(","));
       } else {
         params.append(key, String(value));
       }
@@ -141,57 +141,67 @@ const buildQueryString = (
   });
 
   // Add sorting
-  params.append('sortField', sort.field);
-  params.append('sortDirection', sort.direction);
+  params.append("sortField", sort.field);
+  params.append("sortDirection", sort.direction);
 
   // Add pagination
-  params.append('page', String(pagination.page));
-  params.append('limit', String(pagination.limit));
+  params.append("page", String(pagination.page));
+  params.append("limit", String(pagination.limit));
 
   return params.toString();
 };
 
 // Admin User Service
 export const adminUserService = {
-  // Get participants
-  getParticipants: async (
-    filters: ParticipantFilters = {},
-    sort: SortOptions = { field: 'createdAt', direction: 'desc' },
+  // Get clients
+  getClients: async (
+    filters: ClientFilters = {},
+    sort: SortOptions = { field: "createdAt", direction: "desc" },
     pagination: PaginationOptions = { page: 1, limit: 20 }
   ): Promise<PaginatedUserResponse<any>> => {
     const queryString = buildQueryString(filters, sort, pagination);
-    return await get<PaginatedUserResponse<any>>(`/admin/participants?${queryString}`);
+    return await get<PaginatedUserResponse<any>>(
+      `/admin/clients?${queryString}`
+    );
   },
 
-  // Get support workers
+  // Get workers
   getWorkers: async (
     filters: WorkerFilters = {},
-    sort: SortOptions = { field: 'createdAt', direction: 'desc' },
+    sort: SortOptions = { field: "createdAt", direction: "desc" },
     pagination: PaginationOptions = { page: 1, limit: 20 }
   ): Promise<PaginatedUserResponse<any>> => {
     const queryString = buildQueryString(filters, sort, pagination);
-    return await get<PaginatedUserResponse<any>>(`/admin/support-workers?${queryString}`);
+    return await get<PaginatedUserResponse<any>>(
+      `/admin/workers?${queryString}`
+    );
   },
 
   // Get admins
   getAdmins: async (
     filters: AdminFilters = {},
-    sort: SortOptions = { field: 'createdAt', direction: 'desc' },
+    sort: SortOptions = { field: "createdAt", direction: "desc" },
     pagination: PaginationOptions = { page: 1, limit: 20 }
   ): Promise<PaginatedUserResponse<any>> => {
     const queryString = buildQueryString(filters, sort, pagination);
-    return await get<PaginatedUserResponse<any>>(`/admin/admins?${queryString}`);
+    return await get<PaginatedUserResponse<any>>(
+      `/admin/admins?${queryString}`
+    );
   },
 
   // Get filter options
   getFilterOptions: async (): Promise<FilterOptions> => {
-    const response = await get<{ filterOptions: FilterOptions }>('/admin/users/filter-options');
+    const response = await get<{ filterOptions: FilterOptions }>(
+      "/admin/users/filter-options"
+    );
     return response.filterOptions;
   },
 
   // Get user statistics
   getStatistics: async (): Promise<UserStatistics> => {
-    const response = await get<{ statistics: UserStatistics }>('/admin/users/statistics');
+    const response = await get<{ statistics: UserStatistics }>(
+      "/admin/users/statistics"
+    );
     return response.statistics;
-  }
+  },
 };

@@ -21,19 +21,19 @@ export interface Admin {
     canAccessFinancials: boolean;
     canManageAdmins: boolean;
   };
-  assignedOrganizations: string[];
+  assignedHouseholds: string[];
   createdAt: string;
   updatedAt: string;
   lastLogin?: string;
   __v: number;
-  assignedOrgDetails: OrganizationDetail[];
-  assignedOrganizationCount: number;
+  assignedOrgDetails: HouseholdDetail[];
+  assignedHouseholdCount: number;
 }
 
-export interface OrganizationDetail {
+export interface HouseholdDetail {
   _id: string;
   name: string;
-  // Add other organization fields as needed
+  // Add other household fields as needed
 }
 
 // Admin-specific filter interface
@@ -45,7 +45,7 @@ export interface AdminTableFilters {
   isEmailVerified?: boolean;
   hasProfileImage?: boolean;
   adminType?: string;
-  hasAssignedOrganizations?: boolean;
+  hasAssignedHouseholds?: boolean;
   canManageUsers?: boolean;
   canManageWorkers?: boolean;
   canManageParticipants?: boolean;
@@ -64,4 +64,4 @@ export interface PermissionSummary {
 }
 
 // Helper type for permission keys
-export type PermissionKey = keyof Admin['permissions'];
+export type PermissionKey = keyof Admin["permissions"];

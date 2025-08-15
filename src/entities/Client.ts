@@ -1,7 +1,6 @@
-
 // import { User } from './User';
 
-// export interface Participant extends User {
+// export interface Client extends User {
 //   supportNeeds: string[];
 //   emergencyContact?: {
 //     name: string;
@@ -9,14 +8,14 @@
 //     phone: string;
 //   };
 // }
-// types/participant.ts
+// types/client.ts
 
-export interface Participant {
+export interface Client {
   _id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: "participant";
+  role: "client";
   status: "active" | "inactive" | "pending" | "suspended";
   phone: string;
   notificationPreferences: string;
@@ -36,16 +35,16 @@ export interface Participant {
   updatedAt: string;
   lastLogin?: string;
   __v: number;
-  organization: Organization[];
+  household: Household[];
   guardian: Guardian[];
-  hasOrganization: boolean;
+  hasHousehold: boolean;
   organizationCount: number;
 }
 
-export interface Organization {
+export interface Household {
   _id: string;
   name: string;
-  participantId: string;
+  clientId: string;
   workers: Worker[];
   pendingInvites: PendingInvite[];
   description: string;
@@ -103,7 +102,7 @@ export interface Guardian {
 }
 
 // Filter interfaces (extending from the existing ones)
-export interface ParticipantTableFilters {
+export interface ClientTableFilters {
   status?: string;
   search?: string;
   dateFrom?: string;
@@ -112,10 +111,10 @@ export interface ParticipantTableFilters {
   hasProfileImage?: boolean;
   hasGuardian?: boolean;
   subscriptionTier?: string;
-  subscriptionStatus?: 'active' | 'inactive';
+  subscriptionStatus?: "active" | "inactive";
   hasNdisNumber?: boolean;
   requiresSupervision?: boolean;
-  hasOrganization?: boolean;
+  hasHousehold?: boolean;
 }
 
 export interface FilterOptionsResponse {
@@ -126,5 +125,3 @@ export interface FilterOptionsResponse {
   adminTypes: string[];
   userStatuses: string[];
 }
-
-

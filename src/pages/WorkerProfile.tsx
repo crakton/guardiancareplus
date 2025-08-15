@@ -49,7 +49,7 @@ const mockSupportWorker = {
     country: "USA",
   },
   profileImage: "/placeholder.svg",
-  bio: "Dedicated physical therapist with 7+ years of experience working with participants of all ages. Specialized in mobility assistance and rehabilitation exercises.",
+  bio: "Dedicated physical therapist with 7+ years of experience working with clients of all ages. Specialized in mobility assistance and rehabilitation exercises.",
   skills: [
     "personal-care",
     "therapy",
@@ -60,18 +60,18 @@ const mockSupportWorker = {
   experience: [
     {
       title: "Senior Physical Therapist",
-      organization: "Portland Rehabilitation Center",
+      household: "Portland Rehabilitation Center",
       startDate: new Date("2020-06-01"),
       description:
         "Provide specialized therapy services for adults with mobility challenges. Develop personalized care plans and conduct regular progress assessments.",
     },
     {
       title: "Support Worker",
-      organization: "Northwest Care Services",
+      household: "Northwest Care Services",
       startDate: new Date("2016-04-15"),
       endDate: new Date("2020-05-30"),
       description:
-        "Assisted participants with daily living activities, administered medication, and facilitated community engagement programs.",
+        "Assisted clients with daily living activities, administered medication, and facilitated community engagement programs.",
     },
   ],
   hourlyRate: {
@@ -125,7 +125,7 @@ const upcomingShifts = [
     date: "2025-04-10",
     timeStart: "10:00 AM",
     timeEnd: "12:00 PM",
-    participant: "Emma Wilson",
+    client: "Emma Wilson",
     location: "Home Visit",
     serviceCategory: "therapy",
   },
@@ -134,7 +134,7 @@ const upcomingShifts = [
     date: "2025-04-12",
     timeStart: "2:00 PM",
     timeEnd: "4:00 PM",
-    participant: "Robert Anderson",
+    client: "Robert Anderson",
     location: "Community Center",
     serviceCategory: "social-support",
   },
@@ -143,7 +143,7 @@ const upcomingShifts = [
 const ratings = [
   {
     id: "1",
-    participant: "Emma Wilson",
+    client: "Emma Wilson",
     date: "2025-04-01",
     rating: 5,
     comment:
@@ -151,7 +151,7 @@ const ratings = [
   },
   {
     id: "2",
-    participant: "Thomas Miller",
+    client: "Thomas Miller",
     date: "2025-03-25",
     rating: 4,
     comment:
@@ -208,7 +208,7 @@ export default function SupportWorkerProfile() {
       {/* Header Section */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-            <h1 className="text-3xl font-bold tracking-tight text-guardian">
+          <h1 className="text-3xl font-bold tracking-tight text-guardian">
             My Support Worker Profile
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -415,7 +415,7 @@ export default function SupportWorkerProfile() {
                             {exp.title}
                           </h4>
                           <div className="text-sm text-guardian font-medium mt-1">
-                            {exp.organization} •{" "}
+                            {exp.household} •{" "}
                             {formatDateRange(exp.startDate, exp.endDate)}
                           </div>
                           <p className="text-sm text-gray-700 mt-2 leading-relaxed">
@@ -566,7 +566,7 @@ export default function SupportWorkerProfile() {
                                 Participant:
                               </span>
                               <span className="text-guardian ml-1">
-                                {shift.participant}
+                                {shift.client}
                               </span>
                             </div>
                             <div className="text-sm flex items-center">
@@ -619,7 +619,7 @@ export default function SupportWorkerProfile() {
                           <div className="flex justify-between items-start mb-3">
                             <div>
                               <div className="font-medium text-gray-900">
-                                {review.participant}
+                                {review.client}
                               </div>
                               <div className="text-sm text-muted-foreground">
                                 {new Date(review.date).toLocaleDateString(
@@ -644,14 +644,14 @@ export default function SupportWorkerProfile() {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                        <div className="mx-auto w-16 h-16 bg-guardian/10 rounded-full flex items-center justify-center mb-4">
+                      <div className="mx-auto w-16 h-16 bg-guardian/10 rounded-full flex items-center justify-center mb-4">
                         <Star className="w-6 h-6 text-guardian/60" />
                       </div>
                       <p className="text-muted-foreground text-lg">
                         No reviews available yet
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Complete more shifts to receive participant feedback
+                        Complete more shifts to receive client feedback
                       </p>
                     </div>
                   )}

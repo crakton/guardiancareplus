@@ -24,7 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 
 // Sample Australian support worker data
-const mockSupportWorkers = [
+const mockWorkers = [
   {
     id: "sw1",
     name: "Olivia Thompson",
@@ -63,7 +63,7 @@ const mockSupportWorkers = [
     skills: ["transport", "behavior-support", "social-support"],
     experience: "2 years",
     rate: "$32/hr",
-    bio: "Support worker focused on community integration and behavior support strategies.",
+    bio: " worker focused on community integration and behavior support strategies.",
   },
   {
     id: "sw5",
@@ -77,17 +77,14 @@ const mockSupportWorkers = [
   },
 ];
 
-interface SearchSupportWorkersProps {
+interface SearchWorkersProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function SearchSupportWorkers({
-  open,
-  onOpenChange,
-}: SearchSupportWorkersProps) {
+export function SearchWorkers({ open, onOpenChange }: SearchWorkersProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState(mockSupportWorkers);
+  const [searchResults, setSearchResults] = useState(mockWorkers);
   const [pendingInvites, setPendingInvites] = useState<Record<string, boolean>>(
     {}
   );
@@ -105,11 +102,11 @@ export function SearchSupportWorkers({
     e.preventDefault();
 
     if (!searchQuery.trim()) {
-      setSearchResults(mockSupportWorkers);
+      setSearchResults(mockWorkers);
       return;
     }
 
-    const filtered = mockSupportWorkers.filter(
+    const filtered = mockWorkers.filter(
       (worker) =>
         worker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         worker.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -162,7 +159,7 @@ export function SearchSupportWorkers({
         color: "bg-purple-50 text-purple-700 border-purple-200",
       },
       "social-support": {
-        label: "Social Support",
+        label: "Social ",
         color: "bg-green-50 text-green-700 border-green-200",
       },
       household: {
@@ -174,7 +171,7 @@ export function SearchSupportWorkers({
         color: "bg-indigo-50 text-indigo-700 border-indigo-200",
       },
       "behavior-support": {
-        label: "Behavior Support",
+        label: "Behavior ",
         color: "bg-red-50 text-red-700 border-red-200",
       },
       "medication-management": {
@@ -212,11 +209,11 @@ export function SearchSupportWorkers({
         <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto border-[#1e3b93]/10">
           <DialogHeader className="border-b border-[#1e3b93]/10 pb-4">
             <DialogTitle className="text-xl font-semibold text-[#1e3b93]">
-              Find Support Workers
+              Find Workers
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              Search for qualified support workers across Australia to add to
-              your care network.
+              Search for qualified workers across Australia to add to your care
+              network.
             </DialogDescription>
           </DialogHeader>
 
@@ -236,7 +233,7 @@ export function SearchSupportWorkers({
                     type="button"
                     onClick={() => {
                       setSearchQuery("");
-                      setSearchResults(mockSupportWorkers);
+                      setSearchResults(mockWorkers);
                     }}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#1e3b93]/60 hover:text-[#1e3b93] transition-colors"
                   >
@@ -260,7 +257,7 @@ export function SearchSupportWorkers({
                   <Search className="w-8 h-8 text-[#1e3b93]/60" />
                 </div>
                 <p className="text-muted-foreground text-lg">
-                  No support workers found matching your search.
+                  No workers found matching your search.
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
                   Try adjusting your search terms or browse all workers.

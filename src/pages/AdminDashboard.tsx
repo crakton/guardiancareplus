@@ -75,7 +75,7 @@ const notifications = [
 const bookingsData = [
   {
     id: "1",
-    participant: {
+    client: {
       name: "John Smith",
       avatar: "/avatars/john.jpg",
     },
@@ -91,7 +91,7 @@ const bookingsData = [
   },
   {
     id: "2",
-    participant: {
+    client: {
       name: "Emma Wilson",
       avatar: "/avatars/emma.jpg",
     },
@@ -107,7 +107,7 @@ const bookingsData = [
   },
   {
     id: "3",
-    participant: {
+    client: {
       name: "David Lee",
       avatar: "/avatars/david.jpg",
     },
@@ -134,7 +134,7 @@ const stakeholders = [
     progress: 75,
   },
   {
-    type: "Support Workers",
+    type: "Workers",
     count: 320,
     active: 280,
     pending: 25,
@@ -311,14 +311,14 @@ export default function AdminDashboard() {
                   >
                     <div className="flex items-center gap-4">
                       <Avatar className="border-2 border-[#1e3b93]/10">
-                        <AvatarImage src={booking.participant.avatar} />
+                        <AvatarImage src={booking.client.avatar} />
                         <AvatarFallback className="bg-[#1e3b93]/10 text-[#1e3b93] font-medium">
-                          {booking.participant.name[0]}
+                          {booking.client.name[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="font-medium text-gray-900">
-                          {booking.participant.name}
+                          {booking.client.name}
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {booking.type} • {booking.timeStart}

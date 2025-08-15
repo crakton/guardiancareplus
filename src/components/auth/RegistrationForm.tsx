@@ -41,9 +41,9 @@ const formSchema = z
     confirmPassword: z.string(),
     role: z.enum([
       "admin",
-      "guardian",
-      "participant",
-      "supportWorker",
+      // "guardian",
+      "client",
+      "worker",
     ] as const),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -74,7 +74,7 @@ export function RegistrationForm({
       phone: "",
       password: "",
       confirmPassword: "",
-      role: "participant" as UserRole,
+      role: "client" as UserRole,
     },
   });
 
@@ -282,11 +282,11 @@ export function RegistrationForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="guardian">Guardian</SelectItem>
-                    <SelectItem value="participant">Participant</SelectItem>
-                    <SelectItem value="supportWorker">
-                      Support Worker
+                    {/* <SelectItem value="guardian">Guardian</SelectItem> */}
+                    <SelectItem value="client">
+                      Client (Household Owner)
                     </SelectItem>
+                    <SelectItem value="worker">Professional Worker</SelectItem>
                     {/* <SelectItem value="admin">Admin</SelectItem> */}
                   </SelectContent>
                 </Select>

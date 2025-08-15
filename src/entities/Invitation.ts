@@ -29,26 +29,26 @@ export interface Invite {
   notes: string;
 }
 
-export interface OrganizationInvites {
+export interface HouseholdInvites {
   organizationId: string;
   organizationName: string;
-  participantId: string;
-  participantName: string;
+  clientId: string;
+  clientName: string;
   invites: Invite[];
 }
 
 // API Response interface
-export interface OrganizationsInvitesResponse {
-  organizations: OrganizationInvites[];
+export interface HouseholdsInvitesResponse {
+  households: HouseholdInvites[];
 }
 
 // Flattened invite for table display with additional fields
 export interface FlattenedInvite extends Invite {
   organizationName: string;
   organizationId: string;
-  participantId: string;
-  participantName: string;
-  status: 'pending' | 'accepted' | 'declined'; // Client-side status
+  clientId: string;
+  clientName: string;
+  status: "pending" | "accepted" | "declined"; // Client-side status
 }
 
 // Service agreement for invite acceptance
@@ -67,25 +67,25 @@ export interface ServiceAgreement {
 
 // Request body for processing invite acceptance
 export interface ProcessInviteRequest {
-  status: 'accepted' | 'declined';
+  status: "accepted" | "declined";
   adminNotes?: string;
   serviceAgreement?: ServiceAgreement;
   declineReason?: string; // For decline requests
 }
 
 // Legacy interface - keeping for backward compatibility
-export type InvitationStatus = 'pending' | 'accepted' | 'declined';
+export type InvitationStatus = "pending" | "accepted" | "declined";
 
 export interface Invitation {
   _id: string;
-  participant: {
+  client: {
     _id: string;
     firstName: string;
     lastName: string;
     email: string;
     profileImage?: string;
   };
-  supportWorker: {
+  worker: {
     _id: string;
     firstName: string;
     lastName: string;

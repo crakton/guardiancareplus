@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -26,69 +26,75 @@ import { toast } from "@/hooks/use-toast";
 const mockInvitations: Invitation[] = [
   {
     _id: "inv4",
-    participant: {
+    client: {
       _id: "part4",
       firstName: "Sarah",
       lastName: "Johnson",
       email: "sarah.johnson@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=8"
+      profileImage: "https://i.pravatar.cc/150?img=8",
     },
-    supportWorker: {
+    worker: {
       _id: "sw4",
       firstName: "Robert",
       lastName: "Davis",
       email: "robert.davis@example.com.au",
       profileImage: "https://i.pravatar.cc/150?img=9",
     },
-    proposedRate: '$50',
+    proposedRate: "$50",
     status: "accepted",
     createdAt: new Date("2025-03-20T10:30:00"),
     updatedAt: new Date("2025-03-21T09:15:00"),
-    message: "I'm looking for assistance with community activities."
+    message: "I'm looking for assistance with community activities.",
   },
   {
     _id: "inv5",
-    participant: {
+    client: {
       _id: "part5",
       firstName: "Thomas",
       lastName: "Wilson",
       email: "thomas.wilson@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=10"
+      profileImage: "https://i.pravatar.cc/150?img=10",
     },
-    supportWorker: {
+    worker: {
       _id: "sw4",
       firstName: "Robert",
       lastName: "Davis",
       email: "robert.davis@example.com.au",
-      profileImage: "https://i.pravatar.cc/150?img=9"
+      profileImage: "https://i.pravatar.cc/150?img=9",
     },
-    proposedRate: '$80',
+    proposedRate: "$80",
     status: "pending",
     createdAt: new Date("2025-03-22T14:45:00"),
-    message: "I need help with transportation and social activities."
-  }
+    message: "I need help with transportation and social activities.",
+  },
 ];
 
-export function ParticipantInvitations() {
+export function ClientInvitations() {
   const [invitations, setInvitations] = useState<Invitation[]>(mockInvitations);
 
-  const pendingInvitations = invitations.filter(inv => inv.status === "pending");
-  const acceptedInvitations = invitations.filter(inv => inv.status === "accepted");
+  const pendingInvitations = invitations.filter(
+    (inv) => inv.status === "pending"
+  );
+  const acceptedInvitations = invitations.filter(
+    (inv) => inv.status === "accepted"
+  );
 
   const handleAcceptInvitation = (invitationId: string) => {
-    setInvitations(prev => 
-      prev.map(inv => 
-        inv._id === invitationId 
-          ? {...inv, status: "accepted" as const, updatedAt: new Date()} 
+    setInvitations((prev) =>
+      prev.map((inv) =>
+        inv._id === invitationId
+          ? { ...inv, status: "accepted" as const, updatedAt: new Date() }
           : inv
       )
     );
-    
-    const invitation = invitations.find(inv => inv._id === invitationId);
+
+    const invitation = invitations.find((inv) => inv._id === invitationId);
     if (invitation) {
       toast({
         title: "Invitation Accepted",
-        description: `You are now connected with ${getUserFullName(invitation.participant)}`,
+        description: `You are now connected with ${getUserFullName(
+          invitation.client
+        )}`,
       });
     }
   };
@@ -97,7 +103,7 @@ export function ParticipantInvitations() {
     <Card>
       <CardHeader>
         <CardTitle>My Network</CardTitle>
-        <CardDescription>Manage your connections with participants</CardDescription>
+        <CardDescription>Manage your connections with clients</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {pendingInvitations.length > 0 && (
@@ -106,33 +112,43 @@ export function ParticipantInvitations() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Participant</TableHead>
+                  <TableHead>Client</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Message</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {pendingInvitations.map(invitation => (
+                {pendingInvitations.map((invitation) => (
                   <TableRow key={invitation._id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar>
-                          <AvatarImage src={invitation.participant.profileImage} />
-                          <AvatarFallback>{invitation.participant.firstName.charAt(0)}{invitation.participant.lastName.charAt(0)}</AvatarFallback>
+                          <AvatarImage src={invitation.client.profileImage} />
+                          <AvatarFallback>
+                            {invitation.client.firstName.charAt(0)}
+                            {invitation.client.lastName.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-medium">{getUserFullName(invitation.participant)}</div>
-                          <div className="text-sm text-muted-foreground">{invitation.participant.email}</div>
+                          <div className="font-medium">
+                            {getUserFullName(invitation.client)}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {invitation.client.email}
+                          </div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      {new Date(invitation.createdAt).toLocaleDateString('en-AU', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
+                      {new Date(invitation.createdAt).toLocaleDateString(
+                        "en-AU",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="max-w-[300px] truncate">
@@ -141,8 +157,8 @@ export function ParticipantInvitations() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button 
-                          variant="default" 
+                        <Button
+                          variant="default"
                           size="sm"
                           onClick={() => handleAcceptInvitation(invitation._id)}
                         >
@@ -166,25 +182,35 @@ export function ParticipantInvitations() {
           <h3 className="text-lg font-medium mb-4">My Connections</h3>
           {acceptedInvitations.length === 0 ? (
             <div className="text-center py-8 bg-muted rounded-md">
-              <p className="text-muted-foreground">You don't have any connections yet</p>
+              <p className="text-muted-foreground">
+                You don't have any connections yet
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {acceptedInvitations.map(invitation => (
+              {acceptedInvitations.map((invitation) => (
                 <Card key={invitation._id} className="overflow-hidden">
                   <div className="p-4">
                     <div className="flex items-start gap-4">
                       <Avatar className="h-16 w-16">
-                        <AvatarImage src={invitation.participant.profileImage} />
-                        <AvatarFallback className="text-lg">{invitation.participant.firstName.charAt(0)}{invitation.participant.lastName.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={invitation.client.profileImage} />
+                        <AvatarFallback className="text-lg">
+                          {invitation.client.firstName.charAt(0)}
+                          {invitation.client.lastName.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="font-semibold text-lg">{getUserFullName(invitation.participant)}</h3>
+                        <h3 className="font-semibold text-lg">
+                          {getUserFullName(invitation.client)}
+                        </h3>
                         <p className="text-sm text-muted-foreground">
-                          Connected since {new Date(invitation.updatedAt || invitation.createdAt).toLocaleDateString('en-AU', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
+                          Connected since{" "}
+                          {new Date(
+                            invitation.updatedAt || invitation.createdAt
+                          ).toLocaleDateString("en-AU", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
                           })}
                         </p>
                         <div className="flex gap-2 mt-3">

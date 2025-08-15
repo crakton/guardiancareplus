@@ -11,7 +11,7 @@ export interface BatchInvoice {
     lastName: string;
     phone: string;
   };
-  participantId: {
+  clientId: {
     _id: string;
     email: string;
     firstName: string;
@@ -34,7 +34,7 @@ export interface BatchInvoice {
   updatedAt: string;
   __v: number;
   pdfPath?: string;
-  participantEmailSentAt?: string;
+  clientEmailSentAt?: string;
   workerEmailSentAt?: string;
 }
 
@@ -56,7 +56,11 @@ export interface BatchInvoiceTimesheet {
   subtotal: number;
 }
 
-export type BatchInvoiceStatus = 'pending' | 'completed' | 'failed' | 'cancelled';
+export type BatchInvoiceStatus =
+  | "pending"
+  | "completed"
+  | "failed"
+  | "cancelled";
 
 // Batch Processing History interfaces
 export interface BatchProcessingHistory {
@@ -86,8 +90,12 @@ export interface BatchProcessingHistory {
   __v: number;
 }
 
-export type BatchRunType = 'manual' | 'scheduled';
-export type BatchProcessingStatus = 'started' | 'completed' | 'failed' | 'partiallyCompleted';
+export type BatchRunType = "manual" | "scheduled";
+export type BatchProcessingStatus =
+  | "started"
+  | "completed"
+  | "failed"
+  | "partiallyCompleted";
 
 // Batch Configuration interfaces
 export interface BatchConfig {
@@ -108,7 +116,7 @@ export interface BatchConfig {
   __v: number;
 }
 
-export type BatchFrequency = 'daily' | 'weekly' | 'monthly';
+export type BatchFrequency = "daily" | "weekly" | "monthly";
 
 // API Response interfaces
 export interface BatchInvoicesResponse {
@@ -170,7 +178,7 @@ export interface BatchGenerationRequest {
   startDate: string;
   endDate: string;
   workerId?: string;
-  participantId?: string;
+  clientId?: string;
   sendEmails?: boolean;
 }
 
@@ -189,74 +197,80 @@ export interface BatchInvoiceEmailResponse {
 }
 
 // Status configurations for UI
-export const BATCH_INVOICE_STATUS_CONFIG: Record<BatchInvoiceStatus, {
-  label: string;
-  variant: 'default' | 'secondary' | 'destructive' | 'outline';
-  color: string;
-}> = {
+export const BATCH_INVOICE_STATUS_CONFIG: Record<
+  BatchInvoiceStatus,
+  {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+    color: string;
+  }
+> = {
   pending: {
-    label: 'Pending',
-    variant: 'secondary',
-    color: 'text-yellow-600',
+    label: "Pending",
+    variant: "secondary",
+    color: "text-yellow-600",
   },
   completed: {
-    label: 'Completed',
-    variant: 'default',
-    color: 'text-green-600',
+    label: "Completed",
+    variant: "default",
+    color: "text-green-600",
   },
   failed: {
-    label: 'Failed',
-    variant: 'destructive',
-    color: 'text-red-600',
+    label: "Failed",
+    variant: "destructive",
+    color: "text-red-600",
   },
   cancelled: {
-    label: 'Cancelled',
-    variant: 'outline',
-    color: 'text-gray-600',
+    label: "Cancelled",
+    variant: "outline",
+    color: "text-gray-600",
   },
 };
 
-export const BATCH_PROCESSING_STATUS_CONFIG: Record<BatchProcessingStatus, {
-  label: string;
-  variant: 'default' | 'secondary' | 'destructive' | 'outline';
-  color: string;
-}> = {
+export const BATCH_PROCESSING_STATUS_CONFIG: Record<
+  BatchProcessingStatus,
+  {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+    color: string;
+  }
+> = {
   started: {
-    label: 'Started',
-    variant: 'secondary',
-    color: 'text-blue-600',
+    label: "Started",
+    variant: "secondary",
+    color: "text-blue-600",
   },
   completed: {
-    label: 'Completed',
-    variant: 'default',
-    color: 'text-green-600',
+    label: "Completed",
+    variant: "default",
+    color: "text-green-600",
   },
   failed: {
-    label: 'Failed',
-    variant: 'destructive',
-    color: 'text-red-600',
+    label: "Failed",
+    variant: "destructive",
+    color: "text-red-600",
   },
   partiallyCompleted: {
-    label: 'Partially Completed',
-    variant: 'outline',
-    color: 'text-yellow-600',
+    label: "Partially Completed",
+    variant: "outline",
+    color: "text-yellow-600",
   },
 };
 
 // Frequency labels
 export const BATCH_FREQUENCY_LABELS: Record<BatchFrequency, string> = {
-  daily: 'Daily',
-  weekly: 'Weekly',
-  monthly: 'Monthly',
+  daily: "Daily",
+  weekly: "Weekly",
+  monthly: "Monthly",
 };
 
 // Day of week labels
 export const DAY_OF_WEEK_LABELS: Record<number, string> = {
-  0: 'Sunday',
-  1: 'Monday',
-  2: 'Tuesday',
-  3: 'Wednesday',
-  4: 'Thursday',
-  5: 'Friday',
-  6: 'Saturday',
-}; 
+  0: "Sunday",
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+};

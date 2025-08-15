@@ -70,14 +70,14 @@ const experienceSchema = z.object({
     .array(
       z.object({
         title: z.string().min(2, { message: "Job title is required." }),
-        organization: z
+        household: z
           .string()
-          .min(2, { message: "Organization name is required." }),
+          .min(2, { message: "Household name is required." }),
         startDate: z.string().min(1, { message: "Start date is required." }),
         endDate: z.string().optional(),
-        description: z
-          .string()
-          .min(10, { message: "Please provide a description of your experience." }),
+        description: z.string().min(10, {
+          message: "Please provide a description of your experience.",
+        }),
       })
     )
     .min(1, { message: "Please add at least one experience." }),
@@ -87,7 +87,9 @@ const rateSchema = z.object({
   shiftRates: z
     .array(
       z.object({
-        rateTimeBandId: z.string().min(1, { message: "Rate time band is required." }),
+        rateTimeBandId: z
+          .string()
+          .min(1, { message: "Rate time band is required." }),
         hourlyRate: z.string().min(1, { message: "Hourly rate is required." }),
       })
     )
@@ -113,7 +115,7 @@ const availabilitySchema = z.object({
   }),
 });
 
-interface SupportWorkerSetupProps {
+interface WorkerSetupProps {
   onComplete: () => void;
   isSubmitting?: boolean;
 }
@@ -155,10 +157,10 @@ const weekdays = [
   { value: "sunday", label: "Sunday" },
 ];
 
-export function SupportWorkerSetup({
+export function WorkerSetup({
   onComplete,
   isSubmitting = false,
-}: SupportWorkerSetupProps) {
+}: WorkerSetupProps) {
   const [step, setStep] = useState(1);
   const [isOnboarding, setIsOnboarding] = useState(false);
   const [languageInput, setLanguageInput] = useState("");
@@ -167,8 +169,10 @@ export function SupportWorkerSetup({
   const { completeOnboarding } = useAuth();
 
   // API queries
-  const { data: serviceTypes = [], isLoading: isLoadingServiceTypes } = useGetServiceTypes();
-  const { data: rateTimeBands = [], isLoading: isLoadingRateTimeBands } = useGetRateTimeBands();
+  const { data: serviceTypes = [], isLoading: isLoadingServiceTypes } =
+    useGetServiceTypes();
+  const { data: rateTimeBands = [], isLoading: isLoadingRateTimeBands } =
+    useGetRateTimeBands();
 
   // Form state for all steps
   const [formData, setFormData] = useState({
@@ -178,7 +182,7 @@ export function SupportWorkerSetup({
     experience: [
       {
         title: "",
-        organization: "",
+        household: "",
         startDate: "",
         endDate: "",
         description: "",
@@ -233,12 +237,15 @@ export function SupportWorkerSetup({
 
   // Initialize shift rates when rate time bands are loaded
   React.useEffect(() => {
-    if (rateTimeBands.length > 0 && formData.shiftRates.length !== rateTimeBands.length) {
-      const initialRates = rateTimeBands.map(band => ({
+    if (
+      rateTimeBands.length > 0 &&
+      formData.shiftRates.length !== rateTimeBands.length
+    ) {
+      const initialRates = rateTimeBands.map((band) => ({
         rateTimeBandId: band._id,
-        hourlyRate: ""
+        hourlyRate: "",
       }));
-      setFormData(prev => ({ ...prev, shiftRates: initialRates }));
+      setFormData((prev) => ({ ...prev, shiftRates: initialRates }));
       rateForm.reset({ shiftRates: initialRates });
     }
   }, [rateTimeBands, formData.shiftRates.length, rateForm]);
@@ -261,7 +268,9 @@ export function SupportWorkerSetup({
     nextStep();
   };
 
-  const handleExperienceSubmit = async (data: z.infer<typeof experienceSchema>) => {
+  const handleExperienceSubmit = async (
+    data: z.infer<typeof experienceSchema>
+  ) => {
     setFormData({ ...formData, experience: data.experience as any });
     nextStep();
   };
@@ -271,28 +280,30 @@ export function SupportWorkerSetup({
     nextStep();
   };
 
-  const handleAvailabilitySubmit = async (data: z.infer<typeof availabilitySchema>) => {
+  const handleAvailabilitySubmit = async (
+    data: z.infer<typeof availabilitySchema>
+  ) => {
     const finalData = { ...formData, availability: data.availability as any };
     setFormData(finalData as any);
-    
+
     // Submit all data to the onboarding API
     await submitOnboarding(finalData as any);
   };
 
   const submitOnboarding = async (data: typeof formData) => {
     setIsOnboarding(true);
-    
+
     try {
-      await authService.completeSupportWorkerOnboarding(data);
-      
+      await authService.completeWorkerOnboarding(data);
+
       // Update local user context to reflect completed onboarding
       completeOnboarding();
-      
-      toast.success('Profile setup completed successfully!');
+
+      toast.success("Profile setup completed successfully!");
       onComplete();
     } catch (error) {
-      console.error('Failed to complete onboarding:', error);
-      toast.error('Failed to complete profile setup. Please try again.');
+      console.error("Failed to complete onboarding:", error);
+      toast.error("Failed to complete profile setup. Please try again.");
     } finally {
       setIsOnboarding(false);
     }
@@ -300,7 +311,10 @@ export function SupportWorkerSetup({
 
   // Helper functions for forms
   const addLanguage = () => {
-    if (languageInput.trim() && !formData.languages.includes(languageInput.trim())) {
+    if (
+      languageInput.trim() &&
+      !formData.languages.includes(languageInput.trim())
+    ) {
       const newLanguages = [...formData.languages, languageInput.trim()];
       setFormData({ ...formData, languages: newLanguages });
       bioForm.setValue("languages", newLanguages);
@@ -309,7 +323,7 @@ export function SupportWorkerSetup({
   };
 
   const removeLanguage = (language: string) => {
-    const newLanguages = formData.languages.filter(l => l !== language);
+    const newLanguages = formData.languages.filter((l) => l !== language);
     setFormData({ ...formData, languages: newLanguages });
     bioForm.setValue("languages", newLanguages);
   };
@@ -319,7 +333,7 @@ export function SupportWorkerSetup({
       ...formData.experience,
       {
         title: "",
-        organization: "",
+        household: "",
         startDate: "",
         endDate: "",
         description: "",
@@ -337,37 +351,50 @@ export function SupportWorkerSetup({
 
   const addTimeSlot = (dayIndex: number) => {
     const newAvailability = { ...formData.availability };
-    newAvailability.weekdays[dayIndex].slots.push({ start: "09:00", end: "17:00" });
+    newAvailability.weekdays[dayIndex].slots.push({
+      start: "09:00",
+      end: "17:00",
+    });
     setFormData({ ...formData, availability: newAvailability });
     availabilityForm.setValue("availability", newAvailability);
   };
 
   const removeTimeSlot = (dayIndex: number, slotIndex: number) => {
     const newAvailability = { ...formData.availability };
-    newAvailability.weekdays[dayIndex].slots = newAvailability.weekdays[dayIndex].slots.filter(
-      (_, i) => i !== slotIndex
-    );
+    newAvailability.weekdays[dayIndex].slots = newAvailability.weekdays[
+      dayIndex
+    ].slots.filter((_, i) => i !== slotIndex);
     setFormData({ ...formData, availability: newAvailability });
     availabilityForm.setValue("availability", newAvailability);
   };
 
   const toggleDayAvailability = (dayIndex: number) => {
     const newAvailability = { ...formData.availability };
-    newAvailability.weekdays[dayIndex].available = !newAvailability.weekdays[dayIndex].available;
-    
-    if (newAvailability.weekdays[dayIndex].available && newAvailability.weekdays[dayIndex].slots.length === 0) {
-      newAvailability.weekdays[dayIndex].slots.push({ start: "09:00", end: "17:00" });
+    newAvailability.weekdays[dayIndex].available =
+      !newAvailability.weekdays[dayIndex].available;
+
+    if (
+      newAvailability.weekdays[dayIndex].available &&
+      newAvailability.weekdays[dayIndex].slots.length === 0
+    ) {
+      newAvailability.weekdays[dayIndex].slots.push({
+        start: "09:00",
+        end: "17:00",
+      });
     } else if (!newAvailability.weekdays[dayIndex].available) {
       newAvailability.weekdays[dayIndex].slots = [];
     }
-    
+
     setFormData({ ...formData, availability: newAvailability });
     availabilityForm.setValue("availability", newAvailability);
   };
 
   const stepComponents = [
     // Step 1: Bio and Languages
-    <Card key="bio" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+    <Card
+      key="bio"
+      className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg"
+    >
       <CardHeader className="border-b border-guardian/10">
         <CardTitle className="flex items-center text-guardian">
           <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
@@ -381,7 +408,10 @@ export function SupportWorkerSetup({
       </CardHeader>
       <CardContent className="pt-6">
         <Form {...bioForm}>
-          <form onSubmit={bioForm.handleSubmit(handleBioSubmit)} className="space-y-4">
+          <form
+            onSubmit={bioForm.handleSubmit(handleBioSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={bioForm.control}
               name="bio"
@@ -434,7 +464,7 @@ export function SupportWorkerSetup({
                     value={languageInput}
                     onChange={(e) => setLanguageInput(e.target.value)}
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
                         addLanguage();
                       }
@@ -446,7 +476,7 @@ export function SupportWorkerSetup({
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {commonLanguages
-                    .filter(lang => !formData.languages.includes(lang))
+                    .filter((lang) => !formData.languages.includes(lang))
                     .slice(0, 10)
                     .map((language) => (
                       <Button
@@ -455,7 +485,10 @@ export function SupportWorkerSetup({
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          const newLanguages = [...formData.languages, language];
+                          const newLanguages = [
+                            ...formData.languages,
+                            language,
+                          ];
                           setFormData({ ...formData, languages: newLanguages });
                           bioForm.setValue("languages", newLanguages);
                         }}
@@ -470,7 +503,9 @@ export function SupportWorkerSetup({
                 Select from common languages or add your own.
               </FormDescription>
               {formData.languages.length === 0 && (
-                <p className="text-sm text-red-500">Please add at least one language.</p>
+                <p className="text-sm text-red-500">
+                  Please add at least one language.
+                </p>
               )}
             </div>
 
@@ -490,7 +525,10 @@ export function SupportWorkerSetup({
     </Card>,
 
     // Step 2: Skills
-    <Card key="skills" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+    <Card
+      key="skills"
+      className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg"
+    >
       <CardHeader className="border-b border-guardian/10">
         <CardTitle className="flex items-center text-guardian">
           <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
@@ -504,19 +542,25 @@ export function SupportWorkerSetup({
       </CardHeader>
       <CardContent className="pt-6">
         <Form {...skillsForm}>
-          <form onSubmit={skillsForm.handleSubmit(handleSkillsSubmit)} className="space-y-4">
+          <form
+            onSubmit={skillsForm.handleSubmit(handleSkillsSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={skillsForm.control}
               name="skills"
               render={({ field }) => (
                 <FormItem>
                   <div className="mb-4">
-                    <FormLabel className="text-base">Select your skills</FormLabel>
+                    <FormLabel className="text-base">
+                      Select your skills
+                    </FormLabel>
                     <FormDescription>
-                      Choose all services you can provide. You can update these later.
+                      Choose all services you can provide. You can update these
+                      later.
                     </FormDescription>
                   </div>
-                  
+
                   {isLoadingServiceTypes ? (
                     <div className="flex justify-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guardian"></div>
@@ -524,14 +568,18 @@ export function SupportWorkerSetup({
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {serviceTypes.map((serviceType) => {
-                        const isSelected = field.value?.includes(serviceType._id);
+                        const isSelected = field.value?.includes(
+                          serviceType._id
+                        );
 
                         return (
                           <div
                             key={serviceType._id}
                             onClick={() => {
                               const newSkills = isSelected
-                                ? field.value?.filter((id) => id !== serviceType._id)
+                                ? field.value?.filter(
+                                    (id) => id !== serviceType._id
+                                  )
                                 : [...(field.value || []), serviceType._id];
                               field.onChange(newSkills);
                               setFormData({ ...formData, skills: newSkills });
@@ -554,7 +602,9 @@ export function SupportWorkerSetup({
                               >
                                 <Heart className="h-5 w-5" />
                               </div>
-                              <span className="font-medium text-sm">{serviceType.name}</span>
+                              <span className="font-medium text-sm">
+                                {serviceType.name}
+                              </span>
                               <span className="text-xs text-gray-500 mt-1">
                                 {serviceType.code}
                               </span>
@@ -584,7 +634,10 @@ export function SupportWorkerSetup({
     </Card>,
 
     // Step 3: Experience
-    <Card key="experience" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+    <Card
+      key="experience"
+      className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg"
+    >
       <CardHeader className="border-b border-guardian/10">
         <CardTitle className="flex items-center text-guardian">
           <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
@@ -598,11 +651,19 @@ export function SupportWorkerSetup({
       </CardHeader>
       <CardContent className="pt-6">
         <Form {...experienceForm}>
-          <form onSubmit={experienceForm.handleSubmit(handleExperienceSubmit)} className="space-y-6">
+          <form
+            onSubmit={experienceForm.handleSubmit(handleExperienceSubmit)}
+            className="space-y-6"
+          >
             {formData.experience.map((exp, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-4">
+              <div
+                key={index}
+                className="border border-gray-200 rounded-lg p-4 space-y-4"
+              >
                 <div className="flex justify-between items-start">
-                  <h4 className="font-medium text-gray-900">Experience {index + 1}</h4>
+                  <h4 className="font-medium text-gray-900">
+                    Experience {index + 1}
+                  </h4>
                   {formData.experience.length > 1 && (
                     <Button
                       type="button"
@@ -614,7 +675,7 @@ export function SupportWorkerSetup({
                     </Button>
                   )}
                 </div>
-                
+
                 <div className="space-y-4">
                   <FormField
                     control={experienceForm.control}
@@ -624,7 +685,7 @@ export function SupportWorkerSetup({
                         <FormLabel>Job Title</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Support Worker"
+                            placeholder=" Worker"
                             {...field}
                             onChange={(e) => {
                               field.onChange(e);
@@ -638,13 +699,13 @@ export function SupportWorkerSetup({
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={experienceForm.control}
-                    name={`experience.${index}.organization`}
+                    name={`experience.${index}.household`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Organization</FormLabel>
+                        <FormLabel>Household</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="NDIS Provider Sydney"
@@ -652,7 +713,7 @@ export function SupportWorkerSetup({
                             onChange={(e) => {
                               field.onChange(e);
                               const newExp = [...formData.experience];
-                              newExp[index].organization = e.target.value;
+                              newExp[index].household = e.target.value;
                               setFormData({ ...formData, experience: newExp });
                             }}
                           />
@@ -661,7 +722,7 @@ export function SupportWorkerSetup({
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={experienceForm.control}
@@ -677,7 +738,10 @@ export function SupportWorkerSetup({
                                 field.onChange(e);
                                 const newExp = [...formData.experience];
                                 newExp[index].startDate = e.target.value;
-                                setFormData({ ...formData, experience: newExp });
+                                setFormData({
+                                  ...formData,
+                                  experience: newExp,
+                                });
                               }}
                             />
                           </FormControl>
@@ -685,13 +749,15 @@ export function SupportWorkerSetup({
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={experienceForm.control}
                       name={`experience.${index}.endDate`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>End Date (leave empty if current)</FormLabel>
+                          <FormLabel>
+                            End Date (leave empty if current)
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="date"
@@ -700,7 +766,10 @@ export function SupportWorkerSetup({
                                 field.onChange(e);
                                 const newExp = [...formData.experience];
                                 newExp[index].endDate = e.target.value;
-                                setFormData({ ...formData, experience: newExp });
+                                setFormData({
+                                  ...formData,
+                                  experience: newExp,
+                                });
                               }}
                             />
                           </FormControl>
@@ -709,7 +778,7 @@ export function SupportWorkerSetup({
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={experienceForm.control}
                     name={`experience.${index}.description`}
@@ -718,7 +787,7 @@ export function SupportWorkerSetup({
                         <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Supported participants in Sydney with daily activities and community access..."
+                            placeholder="ed clients in Sydney with daily activities and community access..."
                             className="min-h-[80px]"
                             {...field}
                             onChange={(e) => {
@@ -736,7 +805,7 @@ export function SupportWorkerSetup({
                 </div>
               </div>
             ))}
-            
+
             <Button
               type="button"
               variant="outline"
@@ -746,7 +815,7 @@ export function SupportWorkerSetup({
               <Plus className="mr-2 h-4 w-4" />
               Add Another Experience
             </Button>
-            
+
             <div className="flex justify-between mt-6">
               <Button type="button" variant="outline" onClick={prevStep}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -763,7 +832,10 @@ export function SupportWorkerSetup({
     </Card>,
 
     // Step 4: Rates
-    <Card key="rates" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+    <Card
+      key="rates"
+      className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg"
+    >
       <CardHeader className="border-b border-guardian/10">
         <CardTitle className="flex items-center text-guardian">
           <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
@@ -777,7 +849,10 @@ export function SupportWorkerSetup({
       </CardHeader>
       <CardContent className="pt-6">
         <Form {...rateForm}>
-          <form onSubmit={rateForm.handleSubmit(handleRateSubmit)} className="space-y-4">
+          <form
+            onSubmit={rateForm.handleSubmit(handleRateSubmit)}
+            className="space-y-4"
+          >
             {isLoadingRateTimeBands ? (
               <div className="flex justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guardian"></div>
@@ -785,10 +860,15 @@ export function SupportWorkerSetup({
             ) : (
               <div className="space-y-4">
                 {rateTimeBands.map((band, index) => (
-                  <div key={band._id} className="border border-gray-200 rounded-lg p-4">
+                  <div
+                    key={band._id}
+                    className="border border-gray-200 rounded-lg p-4"
+                  >
                     <div className="mb-2">
                       <h4 className="font-medium text-gray-900">{band.name}</h4>
-                      <p className="text-sm text-gray-600">{band.description}</p>
+                      <p className="text-sm text-gray-600">
+                        {band.description}
+                      </p>
                       <p className="text-xs text-gray-500">
                         {band.startTime} - {band.endTime}
                       </p>
@@ -806,10 +886,15 @@ export function SupportWorkerSetup({
                               {...field}
                               onChange={(e) => {
                                 field.onChange(e);
-                                const newRates = [...(formData.shiftRates || [])];
+                                const newRates = [
+                                  ...(formData.shiftRates || []),
+                                ];
                                 if (newRates[index]) {
                                   newRates[index].hourlyRate = e.target.value;
-                                  setFormData({ ...formData, shiftRates: newRates });
+                                  setFormData({
+                                    ...formData,
+                                    shiftRates: newRates,
+                                  });
                                 }
                               }}
                             />
@@ -820,14 +905,16 @@ export function SupportWorkerSetup({
                     />
                     <input
                       type="hidden"
-                      {...rateForm.register(`shiftRates.${index}.rateTimeBandId`)}
+                      {...rateForm.register(
+                        `shiftRates.${index}.rateTimeBandId`
+                      )}
                       value={band._id}
                     />
                   </div>
                 ))}
               </div>
             )}
-            
+
             <div className="flex justify-between mt-6">
               <Button type="button" variant="outline" onClick={prevStep}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -844,7 +931,10 @@ export function SupportWorkerSetup({
     </Card>,
 
     // Step 5: Availability
-    <Card key="availability" className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg">
+    <Card
+      key="availability"
+      className="w-full max-w-3xl mx-auto border-guardian/10 shadow-lg"
+    >
       <CardHeader className="border-b border-guardian/10">
         <CardTitle className="flex items-center text-guardian">
           <span className="bg-guardian text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm">
@@ -858,10 +948,16 @@ export function SupportWorkerSetup({
       </CardHeader>
       <CardContent className="pt-6">
         <Form {...availabilityForm}>
-          <form onSubmit={availabilityForm.handleSubmit(handleAvailabilitySubmit)} className="space-y-6">
+          <form
+            onSubmit={availabilityForm.handleSubmit(handleAvailabilitySubmit)}
+            className="space-y-6"
+          >
             <div className="space-y-4">
               {formData.availability.weekdays.map((day, dayIndex) => (
-                <div key={day.day} className="border border-gray-200 rounded-lg p-4">
+                <div
+                  key={day.day}
+                  className="border border-gray-200 rounded-lg p-4"
+                >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-3">
                       <input
@@ -871,7 +967,10 @@ export function SupportWorkerSetup({
                         onChange={() => toggleDayAvailability(dayIndex)}
                         className="h-4 w-4 rounded border-gray-300 text-guardian focus:ring-guardian"
                       />
-                      <label htmlFor={`day-${day.day}`} className="font-medium capitalize">
+                      <label
+                        htmlFor={`day-${day.day}`}
+                        className="font-medium capitalize"
+                      >
                         {day.day}
                       </label>
                     </div>
@@ -887,31 +986,52 @@ export function SupportWorkerSetup({
                       </Button>
                     )}
                   </div>
-                  
+
                   {day.available && (
                     <div className="space-y-2 pl-6">
                       {day.slots.map((slot, slotIndex) => (
-                        <div key={slotIndex} className="flex items-center space-x-2">
+                        <div
+                          key={slotIndex}
+                          className="flex items-center space-x-2"
+                        >
                           <div className="flex-1 grid grid-cols-2 gap-2">
                             <div>
-                              <label className="text-xs text-gray-500 block mb-1">Start Time</label>
+                              <label className="text-xs text-gray-500 block mb-1">
+                                Start Time
+                              </label>
                               <TimeInput
                                 value={slot.start}
                                 onChange={(value) => {
-                                  const newAvailability = { ...formData.availability };
-                                  newAvailability.weekdays[dayIndex].slots[slotIndex].start = value;
-                                  setFormData({ ...formData, availability: newAvailability });
+                                  const newAvailability = {
+                                    ...formData.availability,
+                                  };
+                                  newAvailability.weekdays[dayIndex].slots[
+                                    slotIndex
+                                  ].start = value;
+                                  setFormData({
+                                    ...formData,
+                                    availability: newAvailability,
+                                  });
                                 }}
                               />
                             </div>
                             <div>
-                              <label className="text-xs text-gray-500 block mb-1">End Time</label>
+                              <label className="text-xs text-gray-500 block mb-1">
+                                End Time
+                              </label>
                               <TimeInput
                                 value={slot.end}
                                 onChange={(value) => {
-                                  const newAvailability = { ...formData.availability };
-                                  newAvailability.weekdays[dayIndex].slots[slotIndex].end = value;
-                                  setFormData({ ...formData, availability: newAvailability });
+                                  const newAvailability = {
+                                    ...formData.availability,
+                                  };
+                                  newAvailability.weekdays[dayIndex].slots[
+                                    slotIndex
+                                  ].end = value;
+                                  setFormData({
+                                    ...formData,
+                                    availability: newAvailability,
+                                  });
                                 }}
                               />
                             </div>
@@ -932,7 +1052,7 @@ export function SupportWorkerSetup({
                 </div>
               ))}
             </div>
-            
+
             <div className="flex justify-between mt-6">
               <Button type="button" variant="outline" onClick={prevStep}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -969,7 +1089,7 @@ export function SupportWorkerSetup({
 
   return (
     <div className="flex flex-col h-screen">
-          <div className="bg-white shadow-sm py-4 sticky top-0 z-10 border-b border-guardian/10">
+      <div className="bg-white shadow-sm py-4 sticky top-0 z-10 border-b border-guardian/10">
         <div className="container max-w-3xl mx-auto px-4">
           <div className="flex justify-between items-center overflow-x-auto pb-2">
             {steps.map((item, i) => (

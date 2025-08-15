@@ -176,20 +176,20 @@ const TimesheetsManagement: React.FC = () => {
   // Check if any filters are active
   const hasActiveFilters =
     filters.status ||
-    filters.participantId ||
+    filters.clientId ||
     filters.search ||
     filters.startDate ||
     filters.endDate;
 
-  // Get unique participants for filter dropdown
-  const participants = useMemo(() => {
+  // Get unique clients for filter dropdown
+  const clients = useMemo(() => {
     if (!timesheetData?.timesheets) return [];
     const uniqueParticipants = new Map();
     timesheetData.timesheets.forEach((t) => {
-      if (!uniqueParticipants.has(t.participantId._id)) {
-        uniqueParticipants.set(t.participantId._id, {
-          id: t.participantId._id,
-          name: getFullName(t.participantId),
+      if (!uniqueParticipants.has(t.clientId._id)) {
+        uniqueParticipants.set(t.clientId._id, {
+          id: t.clientId._id,
+          name: getFullName(t.clientId),
         });
       }
     });
@@ -396,7 +396,7 @@ const TimesheetsManagement: React.FC = () => {
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by participant, worker, or shift ID..."
+              placeholder="Search by client, worker, or shift ID..."
               value={filters.search || ""}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10"
@@ -441,19 +441,19 @@ const TimesheetsManagement: React.FC = () => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Participant</label>
                 <Select
-                  value={filters.participantId || "all"}
+                  value={filters.clientId || "all"}
                   onValueChange={(value) =>
-                    handleFilterChange("participantId", value)
+                    handleFilterChange("clientId", value)
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="All participants" />
+                    <SelectValue placeholder="All clients" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Participants</SelectItem>
-                    {participants.map((participant) => (
-                      <SelectItem key={participant.id} value={participant.id}>
-                        {participant.name}
+                    {clients.map((client) => (
+                      <SelectItem key={client.id} value={client.id}>
+                        {client.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -623,7 +623,7 @@ const TimesheetsManagement: React.FC = () => {
                               {timesheet.shiftIdRef}
                             </span>
                             <span className="text-xs text-muted-foreground capitalize">
-                              {timesheet.shiftId.serviceTypeId?.name || 'N/A'}
+                              {timesheet.shiftId.serviceTypeId?.name || "N/A"}
                             </span>
                             <span className="text-xs text-muted-foreground">
                               <Building className="h-3 w-3 inline mr-1" />
@@ -698,10 +698,10 @@ const TimesheetsManagement: React.FC = () => {
                         <TableCell>
                           <div className="flex flex-col">
                             <span className="font-medium">
-                              {getFullName(timesheet.participantId)}
+                              {getFullName(timesheet.clientId)}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {timesheet.participantId.email}
+                              {timesheet.clientId.email}
                             </span>
                           </div>
                         </TableCell>

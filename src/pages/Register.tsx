@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RegistrationForm } from "@/components/auth/RegistrationForm";
 import { OTPVerification } from "@/components/auth/OTPVerification";
 import { UserRegistrationInput } from "@/types/user.types";
@@ -53,10 +53,10 @@ export default function Register() {
       });
 
       // After verification, if user is a support worker, redirect to setup choice page
-      if (registrationData?.role === "supportWorker") {
+      if (registrationData?.role === "worker") {
         navigate("/setup-choice");
       } else {
-        redirectToDashboard(registrationData?.role || "participant");
+        redirectToDashboard(registrationData?.role || "client");
       }
     } catch (error) {
       // Error handled by API client
@@ -90,11 +90,11 @@ export default function Register() {
       case "guardian":
         navigate("/guardian");
         break;
-      case "participant":
-        navigate("/participant");
+      case "client":
+        navigate("/client");
         break;
-      case "supportWorker":
-        navigate("/support-worker");
+      case "worker":
+        navigate("/worker");
         break;
       default:
         navigate("/");
@@ -128,7 +128,7 @@ export default function Register() {
                   Create your account
                 </h1>
                 <p className="mt-2 text-gray-600">
-                  Join our community of care providers and participants
+                  Join our community of care providers and clients
                 </p>
               </motion.div>
 
@@ -208,7 +208,11 @@ export default function Register() {
         >
           <div className="flex items-center gap-2 mb-2">
             {/* <Heart className="h-8 w-8 text-white drop-shadow-md" fill="white" /> */}
-            <img src="/favicon.svg" alt="Guardian Care Pro" className="h-10 w-10" />
+            <img
+              src="/favicon.svg"
+              alt="Guardian Care Pro"
+              className="h-10 w-10"
+            />
             <span className="text-2xl font-bold text-white drop-shadow-sm">
               GuardianCare+
             </span>
@@ -225,8 +229,8 @@ export default function Register() {
             Join our caring community
           </h1>
           <p className="text-white/90 text-lg">
-            Guardian Care Pro connects participants, guardians, and support
-            workers in a seamless care ecosystem.
+            Guardian Care Pro connects clients, guardians, and workers in a
+            seamless care ecosystem.
           </p>
 
           <motion.div

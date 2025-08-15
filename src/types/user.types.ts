@@ -1,8 +1,8 @@
 // User Role type
-export type UserRole = 'admin' | 'participant' | 'supportWorker' | 'guardian';
+export type UserRole = "admin" | "client" | "worker";
 
 // User Status type
-export type UserStatus = 'active' | 'pending' | 'suspended' | 'inactive';
+export type UserStatus = "active" | "pending" | "suspended" | "inactive";
 
 // Base User interface with common fields
 export interface BaseUser {
@@ -21,18 +21,30 @@ export interface BaseUser {
   lastLogin?: string;
 }
 
-export type SupportWorkerSkill =
-  | "personal-care"
-  | "transport"
-  | "therapy"
-  | "social-support"
-  | "household"
-  | "communication"
-  | "behavior-support"
-  | "medication-management"
-  | "meal-preparation"
-  | "first-aid";
-
+export type WorkersSkills =
+  | "deep_cleaning"
+  | "laundry_and_ironing"
+  | "time_management"
+  | "meal_prep_and_nutrition"
+  | "food_hygiene"
+  | "childcare"
+  | "first_aid"
+  | "early_education"
+  | "defensive_driving"
+  | "basic_car_maintenance"
+  | "security_surveillance"
+  | "access_control"
+  | "emergency_response"
+  | "fabric_care"
+  | "ironing_technique"
+  | "guest_handling"
+  | "formal_service"
+  | "landscaping"
+  | "tool_handling"
+  | "mobility_assistance"
+  | "medication_support"
+  | "staff_coordination"
+  | "house_budgeting";
 
 // Support Worker Verification Status
 export interface VerificationStatus {
@@ -70,21 +82,21 @@ export interface TimeSlot {
 export interface Experience {
   _id?: string;
   title: string;
-  organization: string;
+  household: string;
   startDate: string;
   endDate?: string;
   description: string;
 }
 
 // Support Worker interface
-export interface SupportWorker extends BaseUser {
+export interface Worker extends BaseUser {
   skills: string[];
   availability: Availability;
   serviceAreas: string[];
   languages: string[];
   ratings: Rating;
   verificationStatus: VerificationStatus;
-  organizations: string[];
+  households: string[];
   qualifications: string[];
   experience: Experience[];
   bio?: string;
@@ -94,7 +106,7 @@ export interface SupportWorker extends BaseUser {
   overnightRate?: number;
 }
 
-// Participant Subscription
+// Client Subscription
 export interface Subscription {
   tier: string;
   isActive: boolean;
@@ -103,8 +115,8 @@ export interface Subscription {
   endDate?: string;
 }
 
-// Participant interface
-export interface Participant extends BaseUser {
+// Client interface
+export interface Client extends BaseUser {
   subscription: Subscription;
   supportNeeds: string[];
   supportCoordinators: string[];
@@ -114,9 +126,9 @@ export interface Participant extends BaseUser {
 }
 
 // Guardian interface
-export interface Guardian extends BaseUser {
-  participants: string[];
-}
+// export interface Guardian extends BaseUser {
+//   clients: string[];
+// }
 
 // Admin interface
 export interface Admin extends BaseUser {
@@ -124,7 +136,7 @@ export interface Admin extends BaseUser {
 }
 
 // Union type for all user types
-export type User = SupportWorker | Participant | Guardian | Admin;
+export type User = Worker | Client | Admin;
 
 // Registration input type
 export interface UserRegistrationInput {

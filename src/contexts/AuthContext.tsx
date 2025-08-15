@@ -1,17 +1,16 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
 import {
   User,
   UserRegistrationInput,
   EmailVerificationInput,
-  SupportWorker,
-  Participant,
-  Guardian,
-  Admin
-} from '../types/user.types';
-import authService from '../api/services/authService';
-import { tokenStorage } from '../api/apiClient';
+  Worker,
+  Client,
+  Admin,
+} from "../types/user.types";
+import authService from "../api/services/authService";
+import { tokenStorage } from "../api/apiClient";
 
 interface AuthContextType {
   user: User | null;
@@ -28,7 +27,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -47,35 +48,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         // Check if we have valid tokens
         const authenticated = checkAuthStatus();
-        
+
         if (authenticated) {
           // Load user data from localStorage if tokens are valid
-          const storedUser = localStorage.getItem('guardianCareUser');
+          const storedUser = localStorage.getItem("guardianCareUser");
           if (storedUser) {
             try {
               const parsedUser = JSON.parse(storedUser);
               setUser(parsedUser);
             } catch (error) {
-              console.error('Error parsing stored user data:', error);
-              localStorage.removeItem('guardianCareUser');
+              console.error("Error parsing stored user data:", error);
+              localStorage.removeItem("guardianCareUser");
               tokenStorage.clearTokens();
             }
           }
         } else {
           // Clear user data if not authenticated
           setUser(null);
-          localStorage.removeItem('guardianCareUser');
+          localStorage.removeItem("guardianCareUser");
           tokenStorage.clearTokens();
         }
       } catch (error) {
-        console.error('Error loading user data:', error);
+        console.error("Error loading user data:", error);
         setUser(null);
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     loadUserData();
   }, []); // Empty dependency array ensures this only runs once
 
@@ -91,26 +92,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!stillAuthenticated) {
           setUser(null);
           setIsAuthenticated(false);
-          localStorage.removeItem('guardianCareUser');
+          localStorage.removeItem("guardianCareUser");
         }
       }
     };
 
     // Check every 5 minutes
     const interval = setInterval(checkTokenRefresh, 5 * 60 * 1000);
-    
+
     return () => clearInterval(interval);
   }, [isAuthenticated]);
 
   const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
-      const { user: loggedInUser } = await authService.login({ email, password });
-      
+      const { user: loggedInUser } = await authService.login({
+        email,
+        password,
+      });
+
       setUser(loggedInUser);
       setIsAuthenticated(true);
-      localStorage.setItem('guardianCareUser', JSON.stringify(loggedInUser));
-      
+      localStorage.setItem("guardianCareUser", JSON.stringify(loggedInUser));
+
       toast.success(`Welcome back, ${loggedInUser.firstName}!`);
       queryClient.invalidateQueries();
     } catch (error) {
@@ -121,20 +125,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (data: UserRegistrationInput): Promise<{ userId: string }> => {
+  const register = async (
+    data: UserRegistrationInput
+  ): Promise<{ userId: string }> => {
     setIsLoading(true);
-  
+
     try {
       const response = await authService.register(data);
-      
+
       // If registration includes tokens (user is automatically logged in)
       if (response.tokens) {
         setUser(response.user);
         setIsAuthenticated(true);
-        localStorage.setItem('guardianCareUser', JSON.stringify(response.user));
+        localStorage.setItem("guardianCareUser", JSON.stringify(response.user));
       }
-      
-      toast.success('Registration successful! Please verify your email.');
+
+      toast.success("Registration successful! Please verify your email.");
       return { userId: response.userId };
     } finally {
       setIsLoading(false);
@@ -143,26 +149,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const verifyEmail = async (data: EmailVerificationInput): Promise<void> => {
     setIsLoading(true);
-  
+
     try {
       const { user: verifiedUser } = await authService.verifyEmail(data);
-      
+
       setUser(verifiedUser);
       setIsAuthenticated(true);
-      localStorage.setItem('guardianCareUser', JSON.stringify(verifiedUser));
-      
-      toast.success('Email verification successful!');
+      localStorage.setItem("guardianCareUser", JSON.stringify(verifiedUser));
+
+      toast.success("Email verification successful!");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const resendVerification = async (email: string): Promise<{ userId: string }> => {
+  const resendVerification = async (
+    email: string
+  ): Promise<{ userId: string }> => {
     setIsLoading(true);
-  
+
     try {
       const response = await authService.resendVerification({ email });
-      toast.success('Verification code has been sent to your email.');
+      toast.success("Verification code has been sent to your email.");
       return { userId: response.userId };
     } finally {
       setIsLoading(false);
@@ -172,17 +180,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const completeOnboarding = () => {
     // This would typically call an API endpoint to update the user's onboarding status
     // For now, we'll just update the local state
-    if (user && user.role === 'supportWorker') {
+    if (user && user.role === "worker") {
       const updatedUser = {
         ...user,
         verificationStatus: {
-          ...(user as SupportWorker).verificationStatus,
-          profileSetupComplete: true
-        }
-      } as SupportWorker;
-      
+          ...(user as Worker).verificationStatus,
+          profileSetupComplete: true,
+        },
+      } as Worker;
+
       setUser(updatedUser);
-      localStorage.setItem('guardianCareUser', JSON.stringify(updatedUser));
+      localStorage.setItem("guardianCareUser", JSON.stringify(updatedUser));
     }
   };
 
@@ -190,35 +198,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await authService.logout();
     } catch (error) {
-      console.warn('Logout error:', error);
+      console.warn("Logout error:", error);
       // Continue with local cleanup even if server logout fails
     } finally {
       // Always clear local state
       setUser(null);
       setIsAuthenticated(false);
-      localStorage.removeItem('guardianCareUser');
+      localStorage.removeItem("guardianCareUser");
       tokenStorage.clearTokens();
-      
-      toast.success('You have been logged out');
-      
+
+      toast.success("You have been logged out");
+
       // Clear all queries from cache on logout
       queryClient.clear();
     }
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isLoading,
-      isAuthenticated,
-      login, 
-      logout, 
-      register, 
-      completeOnboarding,
-      verifyEmail,
-      resendVerification,
-      checkAuthStatus
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        isAuthenticated,
+        login,
+        logout,
+        register,
+        completeOnboarding,
+        verifyEmail,
+        resendVerification,
+        checkAuthStatus,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -227,7 +237,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

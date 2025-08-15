@@ -1,16 +1,16 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
 // import { Navbar } from './components/Navbar';
-import AdminDashboard from '@/pages/AdminDashboard';
-import GuardianDashboard from '@/pages/GuardianDashboard';
-import ParticipantDashboard from '@/pages/ParticipantDashboard';
-import SupportWorkerDashboard from '@/pages/SupportWorkerDashboard';
-import ShiftsPage from './pages/ShiftsPage';
-import ShiftDetails from './pages/ShiftDetails';
-import NotFound from '@/pages/NotFound';
-import ParticipantProfile from './pages/ParticipantProfile';
+import AdminDashboard from "@/pages/AdminDashboard";
+// import GuardianDashboard from '@/pages/GuardianDashboard';
+import ClientDashboard from "@/pages/ClientDashboard";
+import SupportWorkerDashboard from "@/pages/WorkerDashboard";
+import ShiftsPage from "./pages/ShiftsPage";
+import ShiftDetails from "./pages/ShiftDetails";
+import NotFound from "@/pages/NotFound";
+import ClientProfile from "./pages/ClientProfile";
 
 // Define routes with role-based protection
 const router = createBrowserRouter([
@@ -29,58 +29,58 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <ProtectedRoute allowedRoles={['admin']}>
+      <ProtectedRoute allowedRoles={["admin"]}>
         {/* <Navbar /> */}
         <AdminDashboard />
       </ProtectedRoute>
     ),
   },
+  // {
+  //   path: "/guardian",
+  //   element: (
+  //     <ProtectedRoute allowedRoles={['guardian']}>
+  //       {/* <Navbar /> */}
+  //       <GuardianDashboard />
+  //     </ProtectedRoute>
+  //   ),
+  // },
   {
-    path: "/guardian",
+    path: "/client",
     element: (
-      <ProtectedRoute allowedRoles={['guardian']}>
+      <ProtectedRoute allowedRoles={["client"]}>
         {/* <Navbar /> */}
-        <GuardianDashboard />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/participant",
-    element: (
-      <ProtectedRoute allowedRoles={['participant']}>
-        {/* <Navbar /> */}
-        <ParticipantDashboard />
+        <ClientDashboard />
       </ProtectedRoute>
     ),
     children: [
       {
-        path: 'profile',
+        path: "profile",
         element: (
-          <ProtectedRoute allowedRoles={['participant']}>
-            <ParticipantProfile />
+          <ProtectedRoute allowedRoles={["client"]}>
+            <ClientProfile />
           </ProtectedRoute>
-        )
-      }
-    ]
+        ),
+      },
+    ],
   },
   {
-    path: "/support-worker",
+    path: "/worker",
     element: (
-      <ProtectedRoute allowedRoles={['support-worker']}>
+      <ProtectedRoute allowedRoles={["support-worker"]}>
         {/* <Navbar /> */}
         <SupportWorkerDashboard />
       </ProtectedRoute>
     ),
     children: [
       {
-        path: 'profile',
+        path: "profile",
         element: (
-          <ProtectedRoute allowedRoles={['support-worker', 'participant']}>
-            <ParticipantProfile />
+          <ProtectedRoute allowedRoles={["worker", "client"]}>
+            <ClientProfile />
           </ProtectedRoute>
-        )
-      }
-    ]
+        ),
+      },
+    ],
   },
   {
     path: "*",

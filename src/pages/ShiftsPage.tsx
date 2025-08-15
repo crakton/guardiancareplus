@@ -54,8 +54,8 @@ export default function ShiftsPage() {
         `${shift.workerId.firstName} ${shift.workerId.lastName}`
           .toLowerCase()
           .includes(searchTerm)) ||
-      (typeof shift.participantId === "object" &&
-        `${shift.participantId.firstName} ${shift.participantId.lastName}`
+      (typeof shift.clientId === "object" &&
+        `${shift.clientId.firstName} ${shift.clientId.lastName}`
           .toLowerCase()
           .includes(searchTerm)) ||
       (shift.address && shift.address.toLowerCase().includes(searchTerm)) ||
@@ -148,12 +148,12 @@ export default function ShiftsPage() {
     return format(date, "MMM dd, yyyy");
   };
 
-  // Get participant name
+  // Get client name
   const getParticipantName = (
-    participantId: string | { firstName: string; lastName: string }
+    clientId: string | { firstName: string; lastName: string }
   ) => {
-    if (typeof participantId === "object" && participantId?.firstName) {
-      return `${participantId.firstName} ${participantId.lastName}`;
+    if (typeof clientId === "object" && clientId?.firstName) {
+      return `${clientId.firstName} ${clientId.lastName}`;
     }
     return "Participant";
   };
@@ -173,7 +173,7 @@ export default function ShiftsPage() {
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">
-              {getParticipantName(shift.participantId)}
+              {getParticipantName(shift.clientId)}
             </h3>
             <p className="text-sm text-gray-600 mb-1">
               {formatServiceType(shift.serviceType)}
